@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "gameops": {
+      "type": "stdio",
+      "command": ".venv\\Scripts\\python.exe",
+      "args": ["-m", "gameops_investigator.mcp_server"],
+      "env": {
+        "PYTHONPATH": ".",
+        "GAMEOPS_DB_PATH": "data\\gameops_demo.db"
+      }
+    }
+  }
+}
+

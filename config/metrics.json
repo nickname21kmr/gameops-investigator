@@ -1,0 +1,106 @@
+{
+  "tutorial_completion_rate": {
+    "display_name": "新手教程关键步完成率",
+    "description": "完成 opening_item_selected 的去重玩家数 / 触发 new_run_start 的去重玩家数。",
+    "kind": "distinct_user_conversion",
+    "numerator": {"event_name": "opening_item_selected"},
+    "denominator": {"event_name": "new_run_start"},
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "Game Design / LiveOps",
+    "source": "events + users",
+    "quality_notes": "按玩家去重；同一玩家重复上报不提高完成率。"
+  },
+  "trade_success_rate": {
+    "display_name": "首笔交易成功率",
+    "description": "至少一次 trade_order_result=result:success 的玩家数 / 至少触发一次交易结果的玩家数。",
+    "kind": "distinct_user_conversion",
+    "numerator": {"event_name": "trade_order_result", "result": "success"},
+    "denominator": {"event_name": "trade_order_result"},
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "Game Design / LiveOps",
+    "source": "events + users",
+    "quality_notes": "玩家级口径，避免重试次数造成成功率膨胀。"
+  },
+  "turn5_reach_rate": {
+    "display_name": "第 5 回合到达率",
+    "description": "至少到达第 5 回合的玩家数 / 开始新局的玩家数。",
+    "kind": "distinct_user_conversion",
+    "numerator": {"event_name": "turn_advanced", "turn_no_gte": 5},
+    "denominator": {"event_name": "new_run_start"},
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "Game Design / LiveOps",
+    "source": "events + users",
+    "quality_notes": "玩家级漏斗，不累计重复到达事件。"
+  },
+  "d1_retention": {
+    "display_name": "D1 留存率",
+    "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+    "kind": "retention",
+    "day_offset": 1,
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "LiveOps / Product Analytics",
+    "source": "events + users",
+    "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+  },
+  "d3_retention": {
+    "display_name": "D3 留存率",
+    "description": "安装后第 3 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+    "kind": "retention",
+    "day_offset": 3,
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "LiveOps / Product Analytics",
+    "source": "events + users",
+    "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+  },
+  "d7_retention": {
+    "display_name": "D7 留存率",
+    "description": "安装后第 7 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+    "kind": "retention",
+    "day_offset": 7,
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "LiveOps / Product Analytics",
+    "source": "events + users",
+    "quality_notes": "观察窗不足的 cohort 不应进入生产口径；本演示数据覆盖全部安装 cohort 的 D7。"
+  },
+  "system_adoption_rate": {
+    "display_name": "高级系统采用率",
+    "description": "至少触发一次 system_opened 的玩家数 / 至少到达第 8 回合的玩家数。",
+    "kind": "distinct_user_conversion",
+    "numerator": {"event_name": "system_opened"},
+    "denominator": {"event_name": "turn_advanced", "turn_no_gte": 8},
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "Systems Design / LiveOps",
+    "source": "events + users",
+    "quality_notes": "玩家级采用率对事件重复相对稳健。"
+  },
+  "system_open_events_per_eligible_user": {
+    "display_name": "人均高级系统打开事件数",
+    "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+    "kind": "event_count_per_user",
+    "numerator": {"event_name": "system_opened"},
+    "denominator": {"event_name": "turn_advanced", "turn_no_gte": 8},
+    "unit": "ratio",
+    "grain": "install_date",
+    "owner": "Systems Design / Data Quality",
+    "source": "events + users",
+    "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+  },
+  "duplicate_signature_rate": {
+    "display_name": "重复事件签名率",
+    "description": "相同 user/event/time/session/action/result/product 签名中的冗余事件数 / 事件总数。",
+    "kind": "duplicate_signature_rate",
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "Data Platform / QA",
+    "source": "events + users",
+    "quality_notes": "这是数据质量诊断指标，不代表真实玩家行为。"
+  }
+}
+

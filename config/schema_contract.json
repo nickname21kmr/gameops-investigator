@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "description": "Minimal adapter contract for onboarding another game's event warehouse.",
+  "users": {
+    "required_columns": ["user_id", "install_date", "app_version", "channel", "strategy_segment"],
+    "primary_key": ["user_id"]
+  },
+  "events": {
+    "required_columns": ["event_id", "user_id", "event_name", "event_time", "event_date", "session_id", "app_version", "channel", "strategy_segment"],
+    "optional_columns": ["run_id", "turn_no", "product_type", "action", "result", "value_num", "schema_version"],
+    "primary_key": ["event_id"],
+    "foreign_key": {"user_id": "users.user_id"}
+  },
+  "supported_dimensions": ["install_date", "app_version", "channel", "strategy_segment"]
+}

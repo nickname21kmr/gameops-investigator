@@ -1,0 +1,7 @@
+streamlit>=1.59,<2
+pandas>=2.3,<3
+plotly>=6.3,<7
+mcp[cli]>=1.13,<3
+pytest>=8.4,<10
+pillow>=11.3,<13
+

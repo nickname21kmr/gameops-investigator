@@ -1,0 +1,2071 @@
+{
+  "scenario_id": "segment_churn",
+  "title": "新版本局部玩家分群流失，被整体平均值掩盖",
+  "mode": "deterministic_replay",
+  "plan": [
+    "Read the metric contract",
+    "Quantify the overall alert",
+    "Break down by strategy_segment",
+    "Test upstream and data-quality hypotheses",
+    "Run read-only evidence SQL",
+    "Rank candidates and draft a human-review report"
+  ],
+  "alert_metric": {
+    "metric_id": "d1_retention",
+    "display_name": "D1 留存率",
+    "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+    "kind": "retention",
+    "day_offset": 1,
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "LiveOps / Product Analytics",
+    "source": "events + users",
+    "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+  },
+  "overall_comparison": {
+    "ok": true,
+    "metric": {
+      "metric_id": "d1_retention",
+      "display_name": "D1 留存率",
+      "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+      "kind": "retention",
+      "day_offset": 1,
+      "unit": "percent",
+      "grain": "install_date",
+      "owner": "LiveOps / Product Analytics",
+      "source": "events + users",
+      "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+    },
+    "group_by": [],
+    "current_filters": {
+      "start_date": "2026-08-11",
+      "end_date": "2026-08-14",
+      "app_version": "0.9.3",
+      "channel_not": "campus_demo"
+    },
+    "baseline_filters": {
+      "start_date": "2026-08-01",
+      "end_date": "2026-08-10",
+      "app_version": "0.9.3",
+      "channel_not": "campus_demo"
+    },
+    "comparison_method": "two_proportion_z",
+    "rows": [
+      {
+        "dimensions": {},
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 187.0,
+          "denominator": 651.0,
+          "value": 28.725038,
+          "unit": "percent",
+          "dimensions": {}
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 88.0,
+          "denominator": 256.0,
+          "value": 34.375,
+          "unit": "percent",
+          "dimensions": {}
+        },
+        "delta": -5.649962,
+        "relative_delta_pct": -16.436252,
+        "z_score": -1.666229,
+        "confidence": "low"
+      }
+    ]
+  },
+  "anomaly_result": {
+    "ok": true,
+    "method": "two_proportion_z",
+    "threshold": {
+      "z_score": 1.96,
+      "min_denominator": 20
+    },
+    "metric": {
+      "metric_id": "d1_retention",
+      "display_name": "D1 留存率",
+      "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+      "kind": "retention",
+      "day_offset": 1,
+      "unit": "percent",
+      "grain": "install_date",
+      "owner": "LiveOps / Product Analytics",
+      "source": "events + users",
+      "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+    },
+    "windows": {
+      "baseline": [
+        "2026-08-01",
+        "2026-08-10"
+      ],
+      "current": [
+        "2026-08-11",
+        "2026-08-14"
+      ]
+    },
+    "dimensions": [
+      "strategy_segment"
+    ],
+    "filters": {
+      "app_version": "0.9.3",
+      "channel_not": "campus_demo"
+    },
+    "anomaly_count": 1,
+    "anomalies": [
+      {
+        "dimensions": {
+          "strategy_segment": "leveraged"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 8.0,
+          "denominator": 128.0,
+          "value": 6.25,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "leveraged"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 16.0,
+          "denominator": 57.0,
+          "value": 28.070175,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "leveraged"
+          }
+        },
+        "delta": -21.820175,
+        "relative_delta_pct": -77.734375,
+        "z_score": -4.078195,
+        "confidence": "high",
+        "direction": "decrease",
+        "severity_score": 4.078
+      }
+    ],
+    "all_comparisons": [
+      {
+        "dimensions": {
+          "strategy_segment": "conservative"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 64.0,
+          "denominator": 182.0,
+          "value": 35.164835,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "conservative"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 23.0,
+          "denominator": 64.0,
+          "value": 35.9375,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "conservative"
+          }
+        },
+        "delta": -0.772665,
+        "relative_delta_pct": -2.150024,
+        "z_score": -0.111205,
+        "confidence": "low"
+      },
+      {
+        "dimensions": {
+          "strategy_segment": "diversified"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 60.0,
+          "denominator": 189.0,
+          "value": 31.746032,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "diversified"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 30.0,
+          "denominator": 79.0,
+          "value": 37.974684,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "diversified"
+          }
+        },
+        "delta": -6.228652,
+        "relative_delta_pct": -16.402116,
+        "z_score": -0.984407,
+        "confidence": "low"
+      },
+      {
+        "dimensions": {
+          "strategy_segment": "leveraged"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 8.0,
+          "denominator": 128.0,
+          "value": 6.25,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "leveraged"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 16.0,
+          "denominator": 57.0,
+          "value": 28.070175,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "leveraged"
+          }
+        },
+        "delta": -21.820175,
+        "relative_delta_pct": -77.734375,
+        "z_score": -4.078195,
+        "confidence": "high"
+      },
+      {
+        "dimensions": {
+          "strategy_segment": "research"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 55.0,
+          "denominator": 152.0,
+          "value": 36.184211,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "research"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 19.0,
+          "denominator": 56.0,
+          "value": 33.928571,
+          "unit": "percent",
+          "dimensions": {
+            "strategy_segment": "research"
+          }
+        },
+        "delta": 2.255639,
+        "relative_delta_pct": 6.648199,
+        "z_score": 0.301404,
+        "confidence": "low"
+      }
+    ],
+    "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+  },
+  "related_comparisons": {
+    "d3_retention": {
+      "ok": true,
+      "metric": {
+        "metric_id": "d3_retention",
+        "display_name": "D3 留存率",
+        "description": "安装后第 3 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+        "kind": "retention",
+        "day_offset": 3,
+        "unit": "percent",
+        "grain": "install_date",
+        "owner": "LiveOps / Product Analytics",
+        "source": "events + users",
+        "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+      },
+      "group_by": [
+        "strategy_segment"
+      ],
+      "current_filters": {
+        "start_date": "2026-08-11",
+        "end_date": "2026-08-14",
+        "app_version": "0.9.3",
+        "channel_not": "campus_demo"
+      },
+      "baseline_filters": {
+        "start_date": "2026-08-01",
+        "end_date": "2026-08-10",
+        "app_version": "0.9.3",
+        "channel_not": "campus_demo"
+      },
+      "comparison_method": "two_proportion_z",
+      "rows": [
+        {
+          "dimensions": {
+            "strategy_segment": "conservative"
+          },
+          "current": {
+            "metric_id": "d3_retention",
+            "numerator": 48.0,
+            "denominator": 182.0,
+            "value": 26.373626,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "conservative"
+            }
+          },
+          "baseline": {
+            "metric_id": "d3_retention",
+            "numerator": 18.0,
+            "denominator": 64.0,
+            "value": 28.125,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "conservative"
+            }
+          },
+          "delta": -1.751374,
+          "relative_delta_pct": -6.227106,
+          "z_score": -0.271997,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "strategy_segment": "diversified"
+          },
+          "current": {
+            "metric_id": "d3_retention",
+            "numerator": 56.0,
+            "denominator": 189.0,
+            "value": 29.62963,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "diversified"
+            }
+          },
+          "baseline": {
+            "metric_id": "d3_retention",
+            "numerator": 21.0,
+            "denominator": 79.0,
+            "value": 26.582278,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "diversified"
+            }
+          },
+          "delta": 3.047351,
+          "relative_delta_pct": 11.463845,
+          "z_score": 0.502658,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "strategy_segment": "leveraged"
+          },
+          "current": {
+            "metric_id": "d3_retention",
+            "numerator": 6.0,
+            "denominator": 128.0,
+            "value": 4.6875,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            }
+          },
+          "baseline": {
+            "metric_id": "d3_retention",
+            "numerator": 10.0,
+            "denominator": 57.0,
+            "value": 17.54386,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            }
+          },
+          "delta": -12.85636,
+          "relative_delta_pct": -73.28125,
+          "z_score": -2.872387,
+          "confidence": "medium"
+        },
+        {
+          "dimensions": {
+            "strategy_segment": "research"
+          },
+          "current": {
+            "metric_id": "d3_retention",
+            "numerator": 36.0,
+            "denominator": 152.0,
+            "value": 23.684211,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "research"
+            }
+          },
+          "baseline": {
+            "metric_id": "d3_retention",
+            "numerator": 16.0,
+            "denominator": 56.0,
+            "value": 28.571429,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "research"
+            }
+          },
+          "delta": -4.887218,
+          "relative_delta_pct": -17.105263,
+          "z_score": -0.722013,
+          "confidence": "low"
+        }
+      ]
+    },
+    "turn5_reach_rate": {
+      "ok": true,
+      "metric": {
+        "metric_id": "turn5_reach_rate",
+        "display_name": "第 5 回合到达率",
+        "description": "至少到达第 5 回合的玩家数 / 开始新局的玩家数。",
+        "kind": "distinct_user_conversion",
+        "numerator": {
+          "event_name": "turn_advanced",
+          "turn_no_gte": 5
+        },
+        "denominator": {
+          "event_name": "new_run_start"
+        },
+        "unit": "percent",
+        "grain": "install_date",
+        "owner": "Game Design / LiveOps",
+        "source": "events + users",
+        "quality_notes": "玩家级漏斗，不累计重复到达事件。"
+      },
+      "group_by": [
+        "strategy_segment"
+      ],
+      "current_filters": {
+        "start_date": "2026-08-11",
+        "end_date": "2026-08-14",
+        "app_version": "0.9.3",
+        "channel_not": "campus_demo"
+      },
+      "baseline_filters": {
+        "start_date": "2026-08-01",
+        "end_date": "2026-08-10",
+        "app_version": "0.9.3",
+        "channel_not": "campus_demo"
+      },
+      "comparison_method": "two_proportion_z",
+      "rows": [
+        {
+          "dimensions": {
+            "strategy_segment": "conservative"
+          },
+          "current": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 97.0,
+            "denominator": 182.0,
+            "value": 53.296703,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "conservative"
+            }
+          },
+          "baseline": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 39.0,
+            "denominator": 64.0,
+            "value": 60.9375,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "conservative"
+            }
+          },
+          "delta": -7.640797,
+          "relative_delta_pct": -12.538743,
+          "z_score": -1.057465,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "strategy_segment": "diversified"
+          },
+          "current": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 113.0,
+            "denominator": 189.0,
+            "value": 59.78836,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "diversified"
+            }
+          },
+          "baseline": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 45.0,
+            "denominator": 79.0,
+            "value": 56.962025,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "diversified"
+            }
+          },
+          "delta": 2.826334,
+          "relative_delta_pct": 4.961787,
+          "z_score": 0.428855,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "strategy_segment": "leveraged"
+          },
+          "current": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 62.0,
+            "denominator": 128.0,
+            "value": 48.4375,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            }
+          },
+          "baseline": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 30.0,
+            "denominator": 57.0,
+            "value": 52.631579,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            }
+          },
+          "delta": -4.194079,
+          "relative_delta_pct": -7.96875,
+          "z_score": -0.52678,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "strategy_segment": "research"
+          },
+          "current": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 83.0,
+            "denominator": 152.0,
+            "value": 54.605263,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "research"
+            }
+          },
+          "baseline": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 29.0,
+            "denominator": 56.0,
+            "value": 51.785714,
+            "unit": "percent",
+            "dimensions": {
+              "strategy_segment": "research"
+            }
+          },
+          "delta": 2.819549,
+          "relative_delta_pct": 5.444646,
+          "z_score": 0.361812,
+          "confidence": "low"
+        }
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "id": "segment_leveraged_churn",
+      "title": "leveraged 分群发生局部留存退化",
+      "confidence": "high",
+      "status": "supported_candidate",
+      "evidence_refs": [
+        "E03",
+        "E06"
+      ],
+      "reasoning": "该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。"
+    },
+    {
+      "id": "version_wide_regression",
+      "title": "版本级普遍留存退化",
+      "confidence": "low",
+      "status": "partially_disconfirmed",
+      "evidence_refs": [
+        "E02",
+        "E03"
+      ],
+      "reasoning": "整体变化不足以解释分群内的集中跌幅。"
+    },
+    {
+      "id": "random_cohort_noise",
+      "title": "小样本或随机 cohort 波动",
+      "confidence": "low",
+      "status": "alternative",
+      "evidence_refs": [
+        "E03"
+      ],
+      "reasoning": "统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E01",
+      "title": "get_metric_definition",
+      "digest": "153260e503bc18f1",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "definition": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        }
+      }
+    },
+    {
+      "evidence_id": "E02",
+      "title": "compare_cohorts",
+      "digest": "e36366410829d564",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        },
+        "group_by": [],
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {},
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 187.0,
+              "denominator": 651.0,
+              "value": 28.725038,
+              "unit": "percent",
+              "dimensions": {}
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 88.0,
+              "denominator": 256.0,
+              "value": 34.375,
+              "unit": "percent",
+              "dimensions": {}
+            },
+            "delta": -5.649962,
+            "relative_delta_pct": -16.436252,
+            "z_score": -1.666229,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E03",
+      "title": "detect_anomalies",
+      "digest": "ca5763dc023e1679",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "method": "two_proportion_z",
+        "threshold": {
+          "z_score": 1.96,
+          "min_denominator": 20
+        },
+        "metric": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        },
+        "windows": {
+          "baseline": [
+            "2026-08-01",
+            "2026-08-10"
+          ],
+          "current": [
+            "2026-08-11",
+            "2026-08-14"
+          ]
+        },
+        "dimensions": [
+          "strategy_segment"
+        ],
+        "filters": {
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "anomaly_count": 1,
+        "anomalies": [
+          {
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 8.0,
+              "denominator": 128.0,
+              "value": 6.25,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 16.0,
+              "denominator": 57.0,
+              "value": 28.070175,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "delta": -21.820175,
+            "relative_delta_pct": -77.734375,
+            "z_score": -4.078195,
+            "confidence": "high",
+            "direction": "decrease",
+            "severity_score": 4.078
+          }
+        ],
+        "all_comparisons": [
+          {
+            "dimensions": {
+              "strategy_segment": "conservative"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 64.0,
+              "denominator": 182.0,
+              "value": 35.164835,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "conservative"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 23.0,
+              "denominator": 64.0,
+              "value": 35.9375,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "conservative"
+              }
+            },
+            "delta": -0.772665,
+            "relative_delta_pct": -2.150024,
+            "z_score": -0.111205,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "diversified"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 60.0,
+              "denominator": 189.0,
+              "value": 31.746032,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "diversified"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 30.0,
+              "denominator": 79.0,
+              "value": 37.974684,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "diversified"
+              }
+            },
+            "delta": -6.228652,
+            "relative_delta_pct": -16.402116,
+            "z_score": -0.984407,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 8.0,
+              "denominator": 128.0,
+              "value": 6.25,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 16.0,
+              "denominator": 57.0,
+              "value": 28.070175,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "delta": -21.820175,
+            "relative_delta_pct": -77.734375,
+            "z_score": -4.078195,
+            "confidence": "high"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "research"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 55.0,
+              "denominator": 152.0,
+              "value": 36.184211,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "research"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 19.0,
+              "denominator": 56.0,
+              "value": 33.928571,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "research"
+              }
+            },
+            "delta": 2.255639,
+            "relative_delta_pct": 6.648199,
+            "z_score": 0.301404,
+            "confidence": "low"
+          }
+        ],
+        "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+      }
+    },
+    {
+      "evidence_id": "E04",
+      "title": "compare_cohorts",
+      "digest": "764b882977049fe0",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "d3_retention",
+          "display_name": "D3 留存率",
+          "description": "安装后第 3 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 3,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        },
+        "group_by": [
+          "strategy_segment"
+        ],
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {
+              "strategy_segment": "conservative"
+            },
+            "current": {
+              "metric_id": "d3_retention",
+              "numerator": 48.0,
+              "denominator": 182.0,
+              "value": 26.373626,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "conservative"
+              }
+            },
+            "baseline": {
+              "metric_id": "d3_retention",
+              "numerator": 18.0,
+              "denominator": 64.0,
+              "value": 28.125,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "conservative"
+              }
+            },
+            "delta": -1.751374,
+            "relative_delta_pct": -6.227106,
+            "z_score": -0.271997,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "diversified"
+            },
+            "current": {
+              "metric_id": "d3_retention",
+              "numerator": 56.0,
+              "denominator": 189.0,
+              "value": 29.62963,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "diversified"
+              }
+            },
+            "baseline": {
+              "metric_id": "d3_retention",
+              "numerator": 21.0,
+              "denominator": 79.0,
+              "value": 26.582278,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "diversified"
+              }
+            },
+            "delta": 3.047351,
+            "relative_delta_pct": 11.463845,
+            "z_score": 0.502658,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            },
+            "current": {
+              "metric_id": "d3_retention",
+              "numerator": 6.0,
+              "denominator": 128.0,
+              "value": 4.6875,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "baseline": {
+              "metric_id": "d3_retention",
+              "numerator": 10.0,
+              "denominator": 57.0,
+              "value": 17.54386,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "delta": -12.85636,
+            "relative_delta_pct": -73.28125,
+            "z_score": -2.872387,
+            "confidence": "medium"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "research"
+            },
+            "current": {
+              "metric_id": "d3_retention",
+              "numerator": 36.0,
+              "denominator": 152.0,
+              "value": 23.684211,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "research"
+              }
+            },
+            "baseline": {
+              "metric_id": "d3_retention",
+              "numerator": 16.0,
+              "denominator": 56.0,
+              "value": 28.571429,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "research"
+              }
+            },
+            "delta": -4.887218,
+            "relative_delta_pct": -17.105263,
+            "z_score": -0.722013,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E05",
+      "title": "compare_cohorts",
+      "digest": "67ac065b9cf6f3f1",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "turn5_reach_rate",
+          "display_name": "第 5 回合到达率",
+          "description": "至少到达第 5 回合的玩家数 / 开始新局的玩家数。",
+          "kind": "distinct_user_conversion",
+          "numerator": {
+            "event_name": "turn_advanced",
+            "turn_no_gte": 5
+          },
+          "denominator": {
+            "event_name": "new_run_start"
+          },
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "Game Design / LiveOps",
+          "source": "events + users",
+          "quality_notes": "玩家级漏斗，不累计重复到达事件。"
+        },
+        "group_by": [
+          "strategy_segment"
+        ],
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {
+              "strategy_segment": "conservative"
+            },
+            "current": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 97.0,
+              "denominator": 182.0,
+              "value": 53.296703,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "conservative"
+              }
+            },
+            "baseline": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 39.0,
+              "denominator": 64.0,
+              "value": 60.9375,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "conservative"
+              }
+            },
+            "delta": -7.640797,
+            "relative_delta_pct": -12.538743,
+            "z_score": -1.057465,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "diversified"
+            },
+            "current": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 113.0,
+              "denominator": 189.0,
+              "value": 59.78836,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "diversified"
+              }
+            },
+            "baseline": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 45.0,
+              "denominator": 79.0,
+              "value": 56.962025,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "diversified"
+              }
+            },
+            "delta": 2.826334,
+            "relative_delta_pct": 4.961787,
+            "z_score": 0.428855,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "leveraged"
+            },
+            "current": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 62.0,
+              "denominator": 128.0,
+              "value": 48.4375,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "baseline": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 30.0,
+              "denominator": 57.0,
+              "value": 52.631579,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              }
+            },
+            "delta": -4.194079,
+            "relative_delta_pct": -7.96875,
+            "z_score": -0.52678,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "strategy_segment": "research"
+            },
+            "current": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 83.0,
+              "denominator": 152.0,
+              "value": 54.605263,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "research"
+              }
+            },
+            "baseline": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 29.0,
+              "denominator": 56.0,
+              "value": 51.785714,
+              "unit": "percent",
+              "dimensions": {
+                "strategy_segment": "research"
+              }
+            },
+            "delta": 2.819549,
+            "relative_delta_pct": 5.444646,
+            "z_score": 0.361812,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E06",
+      "title": "query_metrics",
+      "digest": "5223b972833f08be",
+      "sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
+      "result": {
+        "ok": true,
+        "columns": [
+          "install_date",
+          "strategy_segment",
+          "cohort_users",
+          "d1_users"
+        ],
+        "rows": [
+          {
+            "install_date": "2026-08-01",
+            "strategy_segment": "conservative",
+            "cohort_users": 84,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-01",
+            "strategy_segment": "diversified",
+            "cohort_users": 103,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-01",
+            "strategy_segment": "leveraged",
+            "cohort_users": 32,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-01",
+            "strategy_segment": "research",
+            "cohort_users": 80,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-02",
+            "strategy_segment": "conservative",
+            "cohort_users": 147,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-02",
+            "strategy_segment": "diversified",
+            "cohort_users": 134,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-02",
+            "strategy_segment": "leveraged",
+            "cohort_users": 76,
+            "d1_users": 3
+          },
+          {
+            "install_date": "2026-08-02",
+            "strategy_segment": "research",
+            "cohort_users": 130,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-03",
+            "strategy_segment": "conservative",
+            "cohort_users": 14,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-03",
+            "strategy_segment": "diversified",
+            "cohort_users": 136,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-03",
+            "strategy_segment": "leveraged",
+            "cohort_users": 220,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-03",
+            "strategy_segment": "research",
+            "cohort_users": 149,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-04",
+            "strategy_segment": "conservative",
+            "cohort_users": 150,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-04",
+            "strategy_segment": "diversified",
+            "cohort_users": 152,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-04",
+            "strategy_segment": "leveraged",
+            "cohort_users": 20,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-04",
+            "strategy_segment": "research",
+            "cohort_users": 153,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-05",
+            "strategy_segment": "conservative",
+            "cohort_users": 126,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-05",
+            "strategy_segment": "diversified",
+            "cohort_users": 140,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-05",
+            "strategy_segment": "leveraged",
+            "cohort_users": 109,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-05",
+            "strategy_segment": "research",
+            "cohort_users": 40,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-06",
+            "strategy_segment": "conservative",
+            "cohort_users": 358,
+            "d1_users": 7
+          },
+          {
+            "install_date": "2026-08-06",
+            "strategy_segment": "diversified",
+            "cohort_users": 348,
+            "d1_users": 3
+          },
+          {
+            "install_date": "2026-08-06",
+            "strategy_segment": "leveraged",
+            "cohort_users": 198,
+            "d1_users": 3
+          },
+          {
+            "install_date": "2026-08-06",
+            "strategy_segment": "research",
+            "cohort_users": 312,
+            "d1_users": 3
+          },
+          {
+            "install_date": "2026-08-07",
+            "strategy_segment": "conservative",
+            "cohort_users": 487,
+            "d1_users": 4
+          },
+          {
+            "install_date": "2026-08-07",
+            "strategy_segment": "diversified",
+            "cohort_users": 303,
+            "d1_users": 6
+          },
+          {
+            "install_date": "2026-08-07",
+            "strategy_segment": "leveraged",
+            "cohort_users": 394,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-07",
+            "strategy_segment": "research",
+            "cohort_users": 207,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-08",
+            "strategy_segment": "conservative",
+            "cohort_users": 212,
+            "d1_users": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "strategy_segment": "diversified",
+            "cohort_users": 602,
+            "d1_users": 8
+          },
+          {
+            "install_date": "2026-08-08",
+            "strategy_segment": "leveraged",
+            "cohort_users": 344,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-08",
+            "strategy_segment": "research",
+            "cohort_users": 209,
+            "d1_users": 3
+          },
+          {
+            "install_date": "2026-08-09",
+            "strategy_segment": "conservative",
+            "cohort_users": 226,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-09",
+            "strategy_segment": "diversified",
+            "cohort_users": 251,
+            "d1_users": 5
+          },
+          {
+            "install_date": "2026-08-09",
+            "strategy_segment": "leveraged",
+            "cohort_users": 201,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-09",
+            "strategy_segment": "research",
+            "cohort_users": 291,
+            "d1_users": 4
+          },
+          {
+            "install_date": "2026-08-10",
+            "strategy_segment": "conservative",
+            "cohort_users": 294,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-10",
+            "strategy_segment": "diversified",
+            "cohort_users": 314,
+            "d1_users": 3
+          },
+          {
+            "install_date": "2026-08-10",
+            "strategy_segment": "leveraged",
+            "cohort_users": 93,
+            "d1_users": 1
+          },
+          {
+            "install_date": "2026-08-10",
+            "strategy_segment": "research",
+            "cohort_users": 210,
+            "d1_users": 3
+          },
+          {
+            "install_date": "2026-08-11",
+            "strategy_segment": "conservative",
+            "cohort_users": 1686,
+            "d1_users": 20
+          },
+          {
+            "install_date": "2026-08-11",
+            "strategy_segment": "diversified",
+            "cohort_users": 1633,
+            "d1_users": 17
+          },
+          {
+            "install_date": "2026-08-11",
+            "strategy_segment": "leveraged",
+            "cohort_users": 1246,
+            "d1_users": 4
+          },
+          {
+            "install_date": "2026-08-11",
+            "strategy_segment": "research",
+            "cohort_users": 1030,
+            "d1_users": 11
+          },
+          {
+            "install_date": "2026-08-12",
+            "strategy_segment": "conservative",
+            "cohort_users": 1198,
+            "d1_users": 15
+          },
+          {
+            "install_date": "2026-08-12",
+            "strategy_segment": "diversified",
+            "cohort_users": 1927,
+            "d1_users": 19
+          },
+          {
+            "install_date": "2026-08-12",
+            "strategy_segment": "leveraged",
+            "cohort_users": 922,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-12",
+            "strategy_segment": "research",
+            "cohort_users": 1265,
+            "d1_users": 8
+          },
+          {
+            "install_date": "2026-08-13",
+            "strategy_segment": "conservative",
+            "cohort_users": 1198,
+            "d1_users": 14
+          },
+          {
+            "install_date": "2026-08-13",
+            "strategy_segment": "diversified",
+            "cohort_users": 1133,
+            "d1_users": 12
+          },
+          {
+            "install_date": "2026-08-13",
+            "strategy_segment": "leveraged",
+            "cohort_users": 647,
+            "d1_users": 2
+          },
+          {
+            "install_date": "2026-08-13",
+            "strategy_segment": "research",
+            "cohort_users": 890,
+            "d1_users": 16
+          },
+          {
+            "install_date": "2026-08-14",
+            "strategy_segment": "conservative",
+            "cohort_users": 1368,
+            "d1_users": 15
+          },
+          {
+            "install_date": "2026-08-14",
+            "strategy_segment": "diversified",
+            "cohort_users": 1669,
+            "d1_users": 12
+          },
+          {
+            "install_date": "2026-08-14",
+            "strategy_segment": "leveraged",
+            "cohort_users": 526,
+            "d1_users": 0
+          },
+          {
+            "install_date": "2026-08-14",
+            "strategy_segment": "research",
+            "cohort_users": 1597,
+            "d1_users": 20
+          }
+        ],
+        "row_count": 56,
+        "truncated": false,
+        "elapsed_ms": 63.158,
+        "executed_sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
+        "policy": "read_only_allowlist"
+      }
+    },
+    {
+      "evidence_id": "E07",
+      "title": "draft_incident_report",
+      "digest": "7cf5d10697fccde7",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "report_id": "IR-6D160C1741",
+        "generated_at": "2026-08-30T01:00:20+00:00",
+        "review_status": "human_review_required",
+        "markdown": "# 新版本局部玩家分群流失，被整体平均值掩盖\n\n- Report ID: `IR-6D160C1741`\n- Generated at: `2026-08-30T01:00:20+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **34.38%** to **28.73%** (-5.65 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. leveraged 分群发生局部留存退化\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E06`\n- Reasoning: 该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。\n\n### 2. 版本级普遍留存退化\n\n- Confidence: `low`\n- Status: `partially_disconfirmed`\n- Evidence: `E02`, `E03`\n- Reasoning: 整体变化不足以解释分群内的集中跌幅。\n\n### 3. 小样本或随机 cohort 波动\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `e36366410829d564`\n\n### E03 — detect_anomalies\n\nResult digest: `ca5763dc023e1679`\n\n### E04 — compare_cohorts\n\nResult digest: `764b882977049fe0`\n\n### E05 — compare_cohorts\n\nResult digest: `67ac065b9cf6f3f1`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100\n```\n\nResult digest: `5223b972833f08be`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+        "citation_check": {
+          "valid": true,
+          "cited_evidence_ids": [
+            "E02",
+            "E03",
+            "E06"
+          ],
+          "available_evidence_ids": [
+            "E01",
+            "E02",
+            "E03",
+            "E04",
+            "E05",
+            "E06"
+          ],
+          "unknown_references": []
+        }
+      }
+    }
+  ],
+  "trace": [
+    {
+      "tool": "get_metric_definition",
+      "arguments": {
+        "metric_name": "d1_retention"
+      },
+      "elapsed_ms": 0.845,
+      "ok": true,
+      "evidence_id": "E01"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "d1_retention",
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "group_by": []
+      },
+      "elapsed_ms": 31.864,
+      "ok": true,
+      "evidence_id": "E02"
+    },
+    {
+      "tool": "detect_anomalies",
+      "arguments": {
+        "metric_name": "d1_retention",
+        "current_start": "2026-08-11",
+        "current_end": "2026-08-14",
+        "baseline_start": "2026-08-01",
+        "baseline_end": "2026-08-10",
+        "dimensions": [
+          "strategy_segment"
+        ],
+        "filters": {
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "min_denominator": 20,
+        "z_threshold": 1.96
+      },
+      "elapsed_ms": 53.017,
+      "ok": true,
+      "evidence_id": "E03"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "d3_retention",
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "group_by": [
+          "strategy_segment"
+        ]
+      },
+      "elapsed_ms": 53.133,
+      "ok": true,
+      "evidence_id": "E04"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "turn5_reach_rate",
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3",
+          "channel_not": "campus_demo"
+        },
+        "group_by": [
+          "strategy_segment"
+        ]
+      },
+      "elapsed_ms": 53.272,
+      "ok": true,
+      "evidence_id": "E05"
+    },
+    {
+      "tool": "query_metrics",
+      "arguments": {
+        "sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
+        "row_limit": 100,
+        "timeout_ms": 3000
+      },
+      "elapsed_ms": 63.253,
+      "ok": true,
+      "evidence_id": "E06"
+    },
+    {
+      "tool": "draft_incident_report",
+      "arguments": {
+        "title": "新版本局部玩家分群流失，被整体平均值掩盖",
+        "alert_metric": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        },
+        "overall_comparison": {
+          "ok": true,
+          "metric": {
+            "metric_id": "d1_retention",
+            "display_name": "D1 留存率",
+            "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+            "kind": "retention",
+            "day_offset": 1,
+            "unit": "percent",
+            "grain": "install_date",
+            "owner": "LiveOps / Product Analytics",
+            "source": "events + users",
+            "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+          },
+          "group_by": [],
+          "current_filters": {
+            "start_date": "2026-08-11",
+            "end_date": "2026-08-14",
+            "app_version": "0.9.3",
+            "channel_not": "campus_demo"
+          },
+          "baseline_filters": {
+            "start_date": "2026-08-01",
+            "end_date": "2026-08-10",
+            "app_version": "0.9.3",
+            "channel_not": "campus_demo"
+          },
+          "comparison_method": "two_proportion_z",
+          "rows": [
+            {
+              "dimensions": {},
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 187.0,
+                "denominator": 651.0,
+                "value": 28.725038,
+                "unit": "percent",
+                "dimensions": {}
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 88.0,
+                "denominator": 256.0,
+                "value": 34.375,
+                "unit": "percent",
+                "dimensions": {}
+              },
+              "delta": -5.649962,
+              "relative_delta_pct": -16.436252,
+              "z_score": -1.666229,
+              "confidence": "low"
+            }
+          ]
+        },
+        "anomaly_result": {
+          "ok": true,
+          "method": "two_proportion_z",
+          "threshold": {
+            "z_score": 1.96,
+            "min_denominator": 20
+          },
+          "metric": {
+            "metric_id": "d1_retention",
+            "display_name": "D1 留存率",
+            "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+            "kind": "retention",
+            "day_offset": 1,
+            "unit": "percent",
+            "grain": "install_date",
+            "owner": "LiveOps / Product Analytics",
+            "source": "events + users",
+            "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+          },
+          "windows": {
+            "baseline": [
+              "2026-08-01",
+              "2026-08-10"
+            ],
+            "current": [
+              "2026-08-11",
+              "2026-08-14"
+            ]
+          },
+          "dimensions": [
+            "strategy_segment"
+          ],
+          "filters": {
+            "app_version": "0.9.3",
+            "channel_not": "campus_demo"
+          },
+          "anomaly_count": 1,
+          "anomalies": [
+            {
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 8.0,
+                "denominator": 128.0,
+                "value": 6.25,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "leveraged"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 16.0,
+                "denominator": 57.0,
+                "value": 28.070175,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "leveraged"
+                }
+              },
+              "delta": -21.820175,
+              "relative_delta_pct": -77.734375,
+              "z_score": -4.078195,
+              "confidence": "high",
+              "direction": "decrease",
+              "severity_score": 4.078
+            }
+          ],
+          "all_comparisons": [
+            {
+              "dimensions": {
+                "strategy_segment": "conservative"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 64.0,
+                "denominator": 182.0,
+                "value": 35.164835,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "conservative"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 23.0,
+                "denominator": 64.0,
+                "value": 35.9375,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "conservative"
+                }
+              },
+              "delta": -0.772665,
+              "relative_delta_pct": -2.150024,
+              "z_score": -0.111205,
+              "confidence": "low"
+            },
+            {
+              "dimensions": {
+                "strategy_segment": "diversified"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 60.0,
+                "denominator": 189.0,
+                "value": 31.746032,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "diversified"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 30.0,
+                "denominator": 79.0,
+                "value": 37.974684,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "diversified"
+                }
+              },
+              "delta": -6.228652,
+              "relative_delta_pct": -16.402116,
+              "z_score": -0.984407,
+              "confidence": "low"
+            },
+            {
+              "dimensions": {
+                "strategy_segment": "leveraged"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 8.0,
+                "denominator": 128.0,
+                "value": 6.25,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "leveraged"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 16.0,
+                "denominator": 57.0,
+                "value": 28.070175,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "leveraged"
+                }
+              },
+              "delta": -21.820175,
+              "relative_delta_pct": -77.734375,
+              "z_score": -4.078195,
+              "confidence": "high"
+            },
+            {
+              "dimensions": {
+                "strategy_segment": "research"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 55.0,
+                "denominator": 152.0,
+                "value": 36.184211,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "research"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 19.0,
+                "denominator": 56.0,
+                "value": 33.928571,
+                "unit": "percent",
+                "dimensions": {
+                  "strategy_segment": "research"
+                }
+              },
+              "delta": 2.255639,
+              "relative_delta_pct": 6.648199,
+              "z_score": 0.301404,
+              "confidence": "low"
+            }
+          ],
+          "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+        },
+        "candidates": [
+          {
+            "id": "segment_leveraged_churn",
+            "title": "leveraged 分群发生局部留存退化",
+            "confidence": "high",
+            "status": "supported_candidate",
+            "evidence_refs": [
+              "E03",
+              "E06"
+            ],
+            "reasoning": "该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。"
+          },
+          {
+            "id": "version_wide_regression",
+            "title": "版本级普遍留存退化",
+            "confidence": "low",
+            "status": "partially_disconfirmed",
+            "evidence_refs": [
+              "E02",
+              "E03"
+            ],
+            "reasoning": "整体变化不足以解释分群内的集中跌幅。"
+          },
+          {
+            "id": "random_cohort_noise",
+            "title": "小样本或随机 cohort 波动",
+            "confidence": "low",
+            "status": "alternative",
+            "evidence_refs": [
+              "E03"
+            ],
+            "reasoning": "统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。"
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E01",
+            "title": "get_metric_definition",
+            "digest": "153260e503bc18f1",
+            "sql": null
+          },
+          {
+            "evidence_id": "E02",
+            "title": "compare_cohorts",
+            "digest": "e36366410829d564",
+            "sql": null
+          },
+          {
+            "evidence_id": "E03",
+            "title": "detect_anomalies",
+            "digest": "ca5763dc023e1679",
+            "sql": null
+          },
+          {
+            "evidence_id": "E04",
+            "title": "compare_cohorts",
+            "digest": "764b882977049fe0",
+            "sql": null
+          },
+          {
+            "evidence_id": "E05",
+            "title": "compare_cohorts",
+            "digest": "67ac065b9cf6f3f1",
+            "sql": null
+          },
+          {
+            "evidence_id": "E06",
+            "title": "query_metrics",
+            "digest": "5223b972833f08be",
+            "sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100"
+          }
+        ],
+        "limitations": [
+          "The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code."
+        ]
+      },
+      "elapsed_ms": 0.109,
+      "ok": true,
+      "evidence_id": "E07"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "report_id": "IR-6D160C1741",
+    "generated_at": "2026-08-30T01:00:20+00:00",
+    "review_status": "human_review_required",
+    "markdown": "# 新版本局部玩家分群流失，被整体平均值掩盖\n\n- Report ID: `IR-6D160C1741`\n- Generated at: `2026-08-30T01:00:20+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **34.38%** to **28.73%** (-5.65 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. leveraged 分群发生局部留存退化\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E06`\n- Reasoning: 该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。\n\n### 2. 版本级普遍留存退化\n\n- Confidence: `low`\n- Status: `partially_disconfirmed`\n- Evidence: `E02`, `E03`\n- Reasoning: 整体变化不足以解释分群内的集中跌幅。\n\n### 3. 小样本或随机 cohort 波动\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `e36366410829d564`\n\n### E03 — detect_anomalies\n\nResult digest: `ca5763dc023e1679`\n\n### E04 — compare_cohorts\n\nResult digest: `764b882977049fe0`\n\n### E05 — compare_cohorts\n\nResult digest: `67ac065b9cf6f3f1`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100\n```\n\nResult digest: `5223b972833f08be`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+    "citation_check": {
+      "valid": true,
+      "cited_evidence_ids": [
+        "E02",
+        "E03",
+        "E06"
+      ],
+      "available_evidence_ids": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06"
+      ],
+      "unknown_references": []
+    }
+  },
+  "elapsed_ms": 256.183
+}

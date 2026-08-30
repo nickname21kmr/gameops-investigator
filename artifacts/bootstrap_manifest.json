@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "source": {
+    "path": "C:\\Users\\ASUS2\\Documents\\ChatGPT\\AI项目\\data\\source\\newton_market_analytics.db",
+    "users": 5000,
+    "events": 136164,
+    "sha256": "ac5eb59168a582e904c28cc6c69e127b4f7312a0c182fedf3b27e9bbcdf26de7"
+  },
+  "derived": {
+    "path": "C:\\Users\\ASUS2\\Documents\\ChatGPT\\AI项目\\data\\gameops_demo.db",
+    "events": 129321,
+    "integrity_check": "ok",
+    "duplicate_signature_groups": 89
+  },
+  "injections": {
+    "tutorial_failure_users": 235,
+    "segment_churn_users": 97,
+    "duplicate_event_rows": 267
+  }
+}

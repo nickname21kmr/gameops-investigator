@@ -1,0 +1,12 @@
+.venv/
+.tools/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.streamlit/secrets.toml
+artifacts/*.log
+artifacts/*.pid
+artifacts/claude_runs/
+data/gameops_demo.db
+epub-studio/
+.DS_Store

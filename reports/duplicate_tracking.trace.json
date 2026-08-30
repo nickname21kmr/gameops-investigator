@@ -1,0 +1,2013 @@
+{
+  "scenario_id": "duplicate_tracking",
+  "title": "埋点重复上报导致高级系统参与强度虚高",
+  "mode": "deterministic_replay",
+  "plan": [
+    "Read the metric contract",
+    "Quantify the overall alert",
+    "Break down by channel",
+    "Test upstream and data-quality hypotheses",
+    "Run read-only evidence SQL",
+    "Rank candidates and draft a human-review report"
+  ],
+  "alert_metric": {
+    "metric_id": "system_open_events_per_eligible_user",
+    "display_name": "人均高级系统打开事件数",
+    "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+    "kind": "event_count_per_user",
+    "numerator": {
+      "event_name": "system_opened"
+    },
+    "denominator": {
+      "event_name": "turn_advanced",
+      "turn_no_gte": 8
+    },
+    "unit": "ratio",
+    "grain": "install_date",
+    "owner": "Systems Design / Data Quality",
+    "source": "events + users",
+    "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+  },
+  "overall_comparison": {
+    "ok": true,
+    "metric": {
+      "metric_id": "system_open_events_per_eligible_user",
+      "display_name": "人均高级系统打开事件数",
+      "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+      "kind": "event_count_per_user",
+      "numerator": {
+        "event_name": "system_opened"
+      },
+      "denominator": {
+        "event_name": "turn_advanced",
+        "turn_no_gte": 8
+      },
+      "unit": "ratio",
+      "grain": "install_date",
+      "owner": "Systems Design / Data Quality",
+      "source": "events + users",
+      "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+    },
+    "group_by": [],
+    "current_filters": {
+      "start_date": "2026-08-08",
+      "end_date": "2026-08-10",
+      "app_version": "0.9.2"
+    },
+    "baseline_filters": {
+      "start_date": "2026-08-04",
+      "end_date": "2026-08-07",
+      "app_version": "0.9.2"
+    },
+    "comparison_method": "log_rate_ratio_z",
+    "rows": [
+      {
+        "dimensions": {},
+        "current": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 680.0,
+          "denominator": 322.0,
+          "value": 2.111801,
+          "unit": "ratio",
+          "dimensions": {}
+        },
+        "baseline": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 411.0,
+          "denominator": 309.0,
+          "value": 1.330097,
+          "unit": "ratio",
+          "dimensions": {}
+        },
+        "delta": 0.781704,
+        "relative_delta_pct": 58.770458,
+        "z_score": 7.399065,
+        "confidence": "high"
+      }
+    ]
+  },
+  "anomaly_result": {
+    "ok": true,
+    "method": "log_rate_ratio_z",
+    "threshold": {
+      "z_score": 1.96,
+      "min_denominator": 20
+    },
+    "metric": {
+      "metric_id": "system_open_events_per_eligible_user",
+      "display_name": "人均高级系统打开事件数",
+      "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+      "kind": "event_count_per_user",
+      "numerator": {
+        "event_name": "system_opened"
+      },
+      "denominator": {
+        "event_name": "turn_advanced",
+        "turn_no_gte": 8
+      },
+      "unit": "ratio",
+      "grain": "install_date",
+      "owner": "Systems Design / Data Quality",
+      "source": "events + users",
+      "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+    },
+    "windows": {
+      "baseline": [
+        "2026-08-04",
+        "2026-08-07"
+      ],
+      "current": [
+        "2026-08-08",
+        "2026-08-10"
+      ]
+    },
+    "dimensions": [
+      "channel"
+    ],
+    "filters": {
+      "app_version": "0.9.2"
+    },
+    "anomaly_count": 1,
+    "anomalies": [
+      {
+        "dimensions": {
+          "channel": "friend_test"
+        },
+        "current": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 356.0,
+          "denominator": 67.0,
+          "value": 5.313433,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "friend_test"
+          }
+        },
+        "baseline": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 97.0,
+          "denominator": 71.0,
+          "value": 1.366197,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "friend_test"
+          }
+        },
+        "delta": 3.947236,
+        "relative_delta_pct": 288.921373,
+        "z_score": 11.858445,
+        "confidence": "high",
+        "direction": "increase",
+        "severity_score": 11.858
+      }
+    ],
+    "all_comparisons": [
+      {
+        "dimensions": {
+          "channel": "campus_demo"
+        },
+        "current": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 132.0,
+          "denominator": 104.0,
+          "value": 1.269231,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "campus_demo"
+          }
+        },
+        "baseline": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 135.0,
+          "denominator": 108.0,
+          "value": 1.25,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "campus_demo"
+          }
+        },
+        "delta": 0.019231,
+        "relative_delta_pct": 1.538462,
+        "z_score": 0.124728,
+        "confidence": "low"
+      },
+      {
+        "dimensions": {
+          "channel": "friend_test"
+        },
+        "current": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 356.0,
+          "denominator": 67.0,
+          "value": 5.313433,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "friend_test"
+          }
+        },
+        "baseline": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 97.0,
+          "denominator": 71.0,
+          "value": 1.366197,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "friend_test"
+          }
+        },
+        "delta": 3.947236,
+        "relative_delta_pct": 288.921373,
+        "z_score": 11.858445,
+        "confidence": "high"
+      },
+      {
+        "dimensions": {
+          "channel": "offline_build"
+        },
+        "current": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 192.0,
+          "denominator": 151.0,
+          "value": 1.271523,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "offline_build"
+          }
+        },
+        "baseline": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "numerator": 179.0,
+          "denominator": 130.0,
+          "value": 1.376923,
+          "unit": "ratio",
+          "dimensions": {
+            "channel": "offline_build"
+          }
+        },
+        "delta": -0.1054,
+        "relative_delta_pct": -7.654741,
+        "z_score": -0.766476,
+        "confidence": "low"
+      }
+    ],
+    "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+  },
+  "related_comparisons": {
+    "system_adoption_rate": {
+      "ok": true,
+      "metric": {
+        "metric_id": "system_adoption_rate",
+        "display_name": "高级系统采用率",
+        "description": "至少触发一次 system_opened 的玩家数 / 至少到达第 8 回合的玩家数。",
+        "kind": "distinct_user_conversion",
+        "numerator": {
+          "event_name": "system_opened"
+        },
+        "denominator": {
+          "event_name": "turn_advanced",
+          "turn_no_gte": 8
+        },
+        "unit": "percent",
+        "grain": "install_date",
+        "owner": "Systems Design / LiveOps",
+        "source": "events + users",
+        "quality_notes": "玩家级采用率对事件重复相对稳健。"
+      },
+      "group_by": [
+        "channel"
+      ],
+      "current_filters": {
+        "start_date": "2026-08-08",
+        "end_date": "2026-08-10",
+        "app_version": "0.9.2"
+      },
+      "baseline_filters": {
+        "start_date": "2026-08-04",
+        "end_date": "2026-08-07",
+        "app_version": "0.9.2"
+      },
+      "comparison_method": "two_proportion_z",
+      "rows": [
+        {
+          "dimensions": {
+            "channel": "campus_demo"
+          },
+          "current": {
+            "metric_id": "system_adoption_rate",
+            "numerator": 80.0,
+            "denominator": 104.0,
+            "value": 76.923077,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "baseline": {
+            "metric_id": "system_adoption_rate",
+            "numerator": 88.0,
+            "denominator": 108.0,
+            "value": 81.481481,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "delta": -4.558405,
+          "relative_delta_pct": -5.594406,
+          "z_score": -0.818141,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "channel": "friend_test"
+          },
+          "current": {
+            "metric_id": "system_adoption_rate",
+            "numerator": 57.0,
+            "denominator": 67.0,
+            "value": 85.074627,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "baseline": {
+            "metric_id": "system_adoption_rate",
+            "numerator": 59.0,
+            "denominator": 71.0,
+            "value": 83.098592,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "delta": 1.976035,
+          "relative_delta_pct": 2.377941,
+          "z_score": 0.316928,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "channel": "offline_build"
+          },
+          "current": {
+            "metric_id": "system_adoption_rate",
+            "numerator": 122.0,
+            "denominator": 151.0,
+            "value": 80.794702,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "baseline": {
+            "metric_id": "system_adoption_rate",
+            "numerator": 108.0,
+            "denominator": 130.0,
+            "value": 83.076923,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "delta": -2.282221,
+          "relative_delta_pct": -2.747118,
+          "z_score": -0.494905,
+          "confidence": "low"
+        }
+      ]
+    },
+    "duplicate_signature_rate": {
+      "ok": true,
+      "metric": {
+        "metric_id": "duplicate_signature_rate",
+        "display_name": "重复事件签名率",
+        "description": "相同 user/event/time/session/action/result/product 签名中的冗余事件数 / 事件总数。",
+        "kind": "duplicate_signature_rate",
+        "unit": "percent",
+        "grain": "install_date",
+        "owner": "Data Platform / QA",
+        "source": "events + users",
+        "quality_notes": "这是数据质量诊断指标，不代表真实玩家行为。"
+      },
+      "group_by": [
+        "channel"
+      ],
+      "current_filters": {
+        "start_date": "2026-08-08",
+        "end_date": "2026-08-10",
+        "app_version": "0.9.2"
+      },
+      "baseline_filters": {
+        "start_date": "2026-08-04",
+        "end_date": "2026-08-07",
+        "app_version": "0.9.2"
+      },
+      "comparison_method": "two_proportion_z",
+      "rows": [
+        {
+          "dimensions": {
+            "channel": "campus_demo"
+          },
+          "current": {
+            "metric_id": "duplicate_signature_rate",
+            "numerator": 0.0,
+            "denominator": 6130.0,
+            "value": 0.0,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "baseline": {
+            "metric_id": "duplicate_signature_rate",
+            "numerator": 0.0,
+            "denominator": 6594.0,
+            "value": 0.0,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "delta": 0.0,
+          "relative_delta_pct": null,
+          "z_score": null,
+          "confidence": "insufficient"
+        },
+        {
+          "dimensions": {
+            "channel": "friend_test"
+          },
+          "current": {
+            "metric_id": "duplicate_signature_rate",
+            "numerator": 267.0,
+            "denominator": 4275.0,
+            "value": 6.245614,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "baseline": {
+            "metric_id": "duplicate_signature_rate",
+            "numerator": 0.0,
+            "denominator": 3920.0,
+            "value": 0.0,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "delta": 6.245614,
+          "relative_delta_pct": null,
+          "z_score": 15.908281,
+          "confidence": "high"
+        },
+        {
+          "dimensions": {
+            "channel": "offline_build"
+          },
+          "current": {
+            "metric_id": "duplicate_signature_rate",
+            "numerator": 0.0,
+            "denominator": 8846.0,
+            "value": 0.0,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "baseline": {
+            "metric_id": "duplicate_signature_rate",
+            "numerator": 0.0,
+            "denominator": 7917.0,
+            "value": 0.0,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "delta": 0.0,
+          "relative_delta_pct": null,
+          "z_score": null,
+          "confidence": "insufficient"
+        }
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "id": "duplicate_event_reporting",
+      "title": "重复埋点上报放大事件级参与强度",
+      "confidence": "high",
+      "status": "supported_candidate",
+      "evidence_refs": [
+        "E05",
+        "E06"
+      ],
+      "reasoning": "重复签名率变化为 6.245614; 玩家级采用率变化为 1.976035。事件级上升但玩家级采用未同步，是数据质量问题的典型证据组合。"
+    },
+    {
+      "id": "real_usage_expansion",
+      "title": "玩家真实提高了高级系统使用频次",
+      "confidence": "low",
+      "status": "not_supported_yet",
+      "evidence_refs": [
+        "E04"
+      ],
+      "reasoning": "需要玩家级采用率、会话深度或游戏内状态同步上升；当前证据不足。"
+    },
+    {
+      "id": "channel_mix_shift",
+      "title": "渠道结构变化造成聚合指标偏移",
+      "confidence": "low",
+      "status": "alternative",
+      "evidence_refs": [
+        "E03"
+      ],
+      "reasoning": "渠道下钻已定位异常，但仍需校验总体用户构成变化。"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E01",
+      "title": "get_metric_definition",
+      "digest": "fcf26eeb5ab29fc4",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "definition": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "display_name": "人均高级系统打开事件数",
+          "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+          "kind": "event_count_per_user",
+          "numerator": {
+            "event_name": "system_opened"
+          },
+          "denominator": {
+            "event_name": "turn_advanced",
+            "turn_no_gte": 8
+          },
+          "unit": "ratio",
+          "grain": "install_date",
+          "owner": "Systems Design / Data Quality",
+          "source": "events + users",
+          "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+        }
+      }
+    },
+    {
+      "evidence_id": "E02",
+      "title": "compare_cohorts",
+      "digest": "43dd4b4168a051d8",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "display_name": "人均高级系统打开事件数",
+          "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+          "kind": "event_count_per_user",
+          "numerator": {
+            "event_name": "system_opened"
+          },
+          "denominator": {
+            "event_name": "turn_advanced",
+            "turn_no_gte": 8
+          },
+          "unit": "ratio",
+          "grain": "install_date",
+          "owner": "Systems Design / Data Quality",
+          "source": "events + users",
+          "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+        },
+        "group_by": [],
+        "current_filters": {
+          "start_date": "2026-08-08",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.2"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-04",
+          "end_date": "2026-08-07",
+          "app_version": "0.9.2"
+        },
+        "comparison_method": "log_rate_ratio_z",
+        "rows": [
+          {
+            "dimensions": {},
+            "current": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 680.0,
+              "denominator": 322.0,
+              "value": 2.111801,
+              "unit": "ratio",
+              "dimensions": {}
+            },
+            "baseline": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 411.0,
+              "denominator": 309.0,
+              "value": 1.330097,
+              "unit": "ratio",
+              "dimensions": {}
+            },
+            "delta": 0.781704,
+            "relative_delta_pct": 58.770458,
+            "z_score": 7.399065,
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E03",
+      "title": "detect_anomalies",
+      "digest": "e4bb3064642c1e38",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "method": "log_rate_ratio_z",
+        "threshold": {
+          "z_score": 1.96,
+          "min_denominator": 20
+        },
+        "metric": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "display_name": "人均高级系统打开事件数",
+          "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+          "kind": "event_count_per_user",
+          "numerator": {
+            "event_name": "system_opened"
+          },
+          "denominator": {
+            "event_name": "turn_advanced",
+            "turn_no_gte": 8
+          },
+          "unit": "ratio",
+          "grain": "install_date",
+          "owner": "Systems Design / Data Quality",
+          "source": "events + users",
+          "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+        },
+        "windows": {
+          "baseline": [
+            "2026-08-04",
+            "2026-08-07"
+          ],
+          "current": [
+            "2026-08-08",
+            "2026-08-10"
+          ]
+        },
+        "dimensions": [
+          "channel"
+        ],
+        "filters": {
+          "app_version": "0.9.2"
+        },
+        "anomaly_count": 1,
+        "anomalies": [
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 356.0,
+              "denominator": 67.0,
+              "value": 5.313433,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 97.0,
+              "denominator": 71.0,
+              "value": 1.366197,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": 3.947236,
+            "relative_delta_pct": 288.921373,
+            "z_score": 11.858445,
+            "confidence": "high",
+            "direction": "increase",
+            "severity_score": 11.858
+          }
+        ],
+        "all_comparisons": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 132.0,
+              "denominator": 104.0,
+              "value": 1.269231,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 135.0,
+              "denominator": 108.0,
+              "value": 1.25,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": 0.019231,
+            "relative_delta_pct": 1.538462,
+            "z_score": 0.124728,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 356.0,
+              "denominator": 67.0,
+              "value": 5.313433,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 97.0,
+              "denominator": 71.0,
+              "value": 1.366197,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": 3.947236,
+            "relative_delta_pct": 288.921373,
+            "z_score": 11.858445,
+            "confidence": "high"
+          },
+          {
+            "dimensions": {
+              "channel": "offline_build"
+            },
+            "current": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 192.0,
+              "denominator": 151.0,
+              "value": 1.271523,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "baseline": {
+              "metric_id": "system_open_events_per_eligible_user",
+              "numerator": 179.0,
+              "denominator": 130.0,
+              "value": 1.376923,
+              "unit": "ratio",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "delta": -0.1054,
+            "relative_delta_pct": -7.654741,
+            "z_score": -0.766476,
+            "confidence": "low"
+          }
+        ],
+        "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+      }
+    },
+    {
+      "evidence_id": "E04",
+      "title": "compare_cohorts",
+      "digest": "018ee833a4517ec7",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "system_adoption_rate",
+          "display_name": "高级系统采用率",
+          "description": "至少触发一次 system_opened 的玩家数 / 至少到达第 8 回合的玩家数。",
+          "kind": "distinct_user_conversion",
+          "numerator": {
+            "event_name": "system_opened"
+          },
+          "denominator": {
+            "event_name": "turn_advanced",
+            "turn_no_gte": 8
+          },
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "Systems Design / LiveOps",
+          "source": "events + users",
+          "quality_notes": "玩家级采用率对事件重复相对稳健。"
+        },
+        "group_by": [
+          "channel"
+        ],
+        "current_filters": {
+          "start_date": "2026-08-08",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.2"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-04",
+          "end_date": "2026-08-07",
+          "app_version": "0.9.2"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "system_adoption_rate",
+              "numerator": 80.0,
+              "denominator": 104.0,
+              "value": 76.923077,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "system_adoption_rate",
+              "numerator": 88.0,
+              "denominator": 108.0,
+              "value": 81.481481,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": -4.558405,
+            "relative_delta_pct": -5.594406,
+            "z_score": -0.818141,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "system_adoption_rate",
+              "numerator": 57.0,
+              "denominator": 67.0,
+              "value": 85.074627,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "system_adoption_rate",
+              "numerator": 59.0,
+              "denominator": 71.0,
+              "value": 83.098592,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": 1.976035,
+            "relative_delta_pct": 2.377941,
+            "z_score": 0.316928,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "offline_build"
+            },
+            "current": {
+              "metric_id": "system_adoption_rate",
+              "numerator": 122.0,
+              "denominator": 151.0,
+              "value": 80.794702,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "baseline": {
+              "metric_id": "system_adoption_rate",
+              "numerator": 108.0,
+              "denominator": 130.0,
+              "value": 83.076923,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "delta": -2.282221,
+            "relative_delta_pct": -2.747118,
+            "z_score": -0.494905,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E05",
+      "title": "compare_cohorts",
+      "digest": "830e34cdc2ebe927",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "duplicate_signature_rate",
+          "display_name": "重复事件签名率",
+          "description": "相同 user/event/time/session/action/result/product 签名中的冗余事件数 / 事件总数。",
+          "kind": "duplicate_signature_rate",
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "Data Platform / QA",
+          "source": "events + users",
+          "quality_notes": "这是数据质量诊断指标，不代表真实玩家行为。"
+        },
+        "group_by": [
+          "channel"
+        ],
+        "current_filters": {
+          "start_date": "2026-08-08",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.2"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-04",
+          "end_date": "2026-08-07",
+          "app_version": "0.9.2"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "duplicate_signature_rate",
+              "numerator": 0.0,
+              "denominator": 6130.0,
+              "value": 0.0,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "duplicate_signature_rate",
+              "numerator": 0.0,
+              "denominator": 6594.0,
+              "value": 0.0,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": 0.0,
+            "relative_delta_pct": null,
+            "z_score": null,
+            "confidence": "insufficient"
+          },
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "duplicate_signature_rate",
+              "numerator": 267.0,
+              "denominator": 4275.0,
+              "value": 6.245614,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "duplicate_signature_rate",
+              "numerator": 0.0,
+              "denominator": 3920.0,
+              "value": 0.0,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": 6.245614,
+            "relative_delta_pct": null,
+            "z_score": 15.908281,
+            "confidence": "high"
+          },
+          {
+            "dimensions": {
+              "channel": "offline_build"
+            },
+            "current": {
+              "metric_id": "duplicate_signature_rate",
+              "numerator": 0.0,
+              "denominator": 8846.0,
+              "value": 0.0,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "baseline": {
+              "metric_id": "duplicate_signature_rate",
+              "numerator": 0.0,
+              "denominator": 7917.0,
+              "value": 0.0,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "delta": 0.0,
+            "relative_delta_pct": null,
+            "z_score": null,
+            "confidence": "insufficient"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E06",
+      "title": "query_metrics",
+      "digest": "834f7e9a309a9b66",
+      "sql": "SELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50",
+      "result": {
+        "ok": true,
+        "columns": [
+          "install_date",
+          "channel",
+          "user_id",
+          "event_time",
+          "session_id",
+          "product_type",
+          "copies"
+        ],
+        "rows": [
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_00497",
+            "event_time": "2026-08-08T23:53:00",
+            "session_id": "ses_00497_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_01027",
+            "event_time": "2026-08-08T15:10:00",
+            "session_id": "ses_01027_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_01370",
+            "event_time": "2026-08-08T15:37:00",
+            "session_id": "ses_01370_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_01487",
+            "event_time": "2026-08-08T18:51:00",
+            "session_id": "ses_01487_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_01487",
+            "event_time": "2026-08-08T19:07:00",
+            "session_id": "ses_01487_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_01509",
+            "event_time": "2026-08-08T18:48:00",
+            "session_id": "ses_01509_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_01509",
+            "event_time": "2026-08-08T19:18:00",
+            "session_id": "ses_01509_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_02051",
+            "event_time": "2026-08-08T17:22:00",
+            "session_id": "ses_02051_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_02228",
+            "event_time": "2026-08-08T20:59:00",
+            "session_id": "ses_02228_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_02228",
+            "event_time": "2026-08-08T21:03:00",
+            "session_id": "ses_02228_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_02228",
+            "event_time": "2026-08-08T21:23:00",
+            "session_id": "ses_02228_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_02810",
+            "event_time": "2026-08-08T22:59:00",
+            "session_id": "ses_02810_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_02810",
+            "event_time": "2026-08-08T23:05:00",
+            "session_id": "ses_02810_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_02889",
+            "event_time": "2026-08-08T20:34:00",
+            "session_id": "ses_02889_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_03073",
+            "event_time": "2026-08-09T00:35:00",
+            "session_id": "ses_03073_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_03193",
+            "event_time": "2026-08-08T20:02:00",
+            "session_id": "ses_03193_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_03319",
+            "event_time": "2026-08-08T19:31:00",
+            "session_id": "ses_03319_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_03393",
+            "event_time": "2026-08-08T16:39:00",
+            "session_id": "ses_03393_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_03393",
+            "event_time": "2026-08-08T17:01:00",
+            "session_id": "ses_03393_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_03888",
+            "event_time": "2026-08-08T11:58:00",
+            "session_id": "ses_03888_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_04059",
+            "event_time": "2026-08-08T21:39:00",
+            "session_id": "ses_04059_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_04331",
+            "event_time": "2026-08-08T12:38:00",
+            "session_id": "ses_04331_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "user_id": "usr_04331",
+            "event_time": "2026-08-08T13:12:00",
+            "session_id": "ses_04331_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00019",
+            "event_time": "2026-08-09T23:31:00",
+            "session_id": "ses_00019_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00019",
+            "event_time": "2026-08-10T00:03:00",
+            "session_id": "ses_00019_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00019",
+            "event_time": "2026-08-10T00:15:00",
+            "session_id": "ses_00019_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00164",
+            "event_time": "2026-08-09T20:08:00",
+            "session_id": "ses_00164_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00164",
+            "event_time": "2026-08-09T20:14:00",
+            "session_id": "ses_00164_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00176",
+            "event_time": "2026-08-09T17:00:00",
+            "session_id": "ses_00176_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00176",
+            "event_time": "2026-08-09T17:06:00",
+            "session_id": "ses_00176_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00198",
+            "event_time": "2026-08-09T22:05:00",
+            "session_id": "ses_00198_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00335",
+            "event_time": "2026-08-09T23:58:00",
+            "session_id": "ses_00335_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00874",
+            "event_time": "2026-08-10T00:45:00",
+            "session_id": "ses_00874_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_00874",
+            "event_time": "2026-08-10T00:47:00",
+            "session_id": "ses_00874_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01360",
+            "event_time": "2026-08-09T17:35:00",
+            "session_id": "ses_01360_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01360",
+            "event_time": "2026-08-09T17:53:00",
+            "session_id": "ses_01360_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01672",
+            "event_time": "2026-08-09T15:04:00",
+            "session_id": "ses_01672_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01672",
+            "event_time": "2026-08-09T15:10:00",
+            "session_id": "ses_01672_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01738",
+            "event_time": "2026-08-09T21:43:00",
+            "session_id": "ses_01738_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01738",
+            "event_time": "2026-08-09T21:47:00",
+            "session_id": "ses_01738_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01865",
+            "event_time": "2026-08-09T14:33:00",
+            "session_id": "ses_01865_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_01865",
+            "event_time": "2026-08-09T15:05:00",
+            "session_id": "ses_01865_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02122",
+            "event_time": "2026-08-09T21:35:00",
+            "session_id": "ses_02122_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02122",
+            "event_time": "2026-08-09T21:37:00",
+            "session_id": "ses_02122_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02405",
+            "event_time": "2026-08-09T16:33:00",
+            "session_id": "ses_02405_00",
+            "product_type": "gold",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02405",
+            "event_time": "2026-08-09T16:35:00",
+            "session_id": "ses_02405_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02529",
+            "event_time": "2026-08-09T13:40:00",
+            "session_id": "ses_02529_00",
+            "product_type": "short",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02529",
+            "event_time": "2026-08-09T14:02:00",
+            "session_id": "ses_02529_00",
+            "product_type": "futures",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02802",
+            "event_time": "2026-08-09T22:18:00",
+            "session_id": "ses_02802_00",
+            "product_type": "annuity",
+            "copies": 4
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "user_id": "usr_02802",
+            "event_time": "2026-08-09T22:40:00",
+            "session_id": "ses_02802_00",
+            "product_type": "gold",
+            "copies": 4
+          }
+        ],
+        "row_count": 50,
+        "truncated": false,
+        "elapsed_ms": 16.282,
+        "executed_sql": "SELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50",
+        "policy": "read_only_allowlist"
+      }
+    },
+    {
+      "evidence_id": "E07",
+      "title": "draft_incident_report",
+      "digest": "bddd808edd57180d",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "report_id": "IR-5015DD94CE",
+        "generated_at": "2026-08-30T01:00:20+00:00",
+        "review_status": "human_review_required",
+        "markdown": "# 埋点重复上报导致高级系统参与强度虚高\n\n- Report ID: `IR-5015DD94CE`\n- Generated at: `2026-08-30T01:00:20+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`人均高级系统打开事件数` changed from **1.330** to **2.112** (+0.782).\nThe detector used `log_rate_ratio_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 重复埋点上报放大事件级参与强度\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E05`, `E06`\n- Reasoning: 重复签名率变化为 6.245614; 玩家级采用率变化为 1.976035。事件级上升但玩家级采用未同步，是数据质量问题的典型证据组合。\n\n### 2. 玩家真实提高了高级系统使用频次\n\n- Confidence: `low`\n- Status: `not_supported_yet`\n- Evidence: `E04`\n- Reasoning: 需要玩家级采用率、会话深度或游戏内状态同步上升；当前证据不足。\n\n### 3. 渠道结构变化造成聚合指标偏移\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 渠道下钻已定位异常，但仍需校验总体用户构成变化。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `fcf26eeb5ab29fc4`\n\n### E02 — compare_cohorts\n\nResult digest: `43dd4b4168a051d8`\n\n### E03 — detect_anomalies\n\nResult digest: `e4bb3064642c1e38`\n\n### E04 — compare_cohorts\n\nResult digest: `018ee833a4517ec7`\n\n### E05 — compare_cohorts\n\nResult digest: `830e34cdc2ebe927`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50\n```\n\nResult digest: `834f7e9a309a9b66`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+        "citation_check": {
+          "valid": true,
+          "cited_evidence_ids": [
+            "E03",
+            "E04",
+            "E05",
+            "E06"
+          ],
+          "available_evidence_ids": [
+            "E01",
+            "E02",
+            "E03",
+            "E04",
+            "E05",
+            "E06"
+          ],
+          "unknown_references": []
+        }
+      }
+    }
+  ],
+  "trace": [
+    {
+      "tool": "get_metric_definition",
+      "arguments": {
+        "metric_name": "system_open_events_per_eligible_user"
+      },
+      "elapsed_ms": 0.827,
+      "ok": true,
+      "evidence_id": "E01"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "system_open_events_per_eligible_user",
+        "current_filters": {
+          "start_date": "2026-08-08",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.2"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-04",
+          "end_date": "2026-08-07",
+          "app_version": "0.9.2"
+        },
+        "group_by": []
+      },
+      "elapsed_ms": 44.933,
+      "ok": true,
+      "evidence_id": "E02"
+    },
+    {
+      "tool": "detect_anomalies",
+      "arguments": {
+        "metric_name": "system_open_events_per_eligible_user",
+        "current_start": "2026-08-08",
+        "current_end": "2026-08-10",
+        "baseline_start": "2026-08-04",
+        "baseline_end": "2026-08-07",
+        "dimensions": [
+          "channel"
+        ],
+        "filters": {
+          "app_version": "0.9.2"
+        },
+        "min_denominator": 20,
+        "z_threshold": 1.96
+      },
+      "elapsed_ms": 68.21,
+      "ok": true,
+      "evidence_id": "E03"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "system_adoption_rate",
+        "current_filters": {
+          "start_date": "2026-08-08",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.2"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-04",
+          "end_date": "2026-08-07",
+          "app_version": "0.9.2"
+        },
+        "group_by": [
+          "channel"
+        ]
+      },
+      "elapsed_ms": 68.871,
+      "ok": true,
+      "evidence_id": "E04"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "duplicate_signature_rate",
+        "current_filters": {
+          "start_date": "2026-08-08",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.2"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-04",
+          "end_date": "2026-08-07",
+          "app_version": "0.9.2"
+        },
+        "group_by": [
+          "channel"
+        ]
+      },
+      "elapsed_ms": 159.019,
+      "ok": true,
+      "evidence_id": "E05"
+    },
+    {
+      "tool": "query_metrics",
+      "arguments": {
+        "sql": "SELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50",
+        "row_limit": 100,
+        "timeout_ms": 3000
+      },
+      "elapsed_ms": 16.363,
+      "ok": true,
+      "evidence_id": "E06"
+    },
+    {
+      "tool": "draft_incident_report",
+      "arguments": {
+        "title": "埋点重复上报导致高级系统参与强度虚高",
+        "alert_metric": {
+          "metric_id": "system_open_events_per_eligible_user",
+          "display_name": "人均高级系统打开事件数",
+          "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+          "kind": "event_count_per_user",
+          "numerator": {
+            "event_name": "system_opened"
+          },
+          "denominator": {
+            "event_name": "turn_advanced",
+            "turn_no_gte": 8
+          },
+          "unit": "ratio",
+          "grain": "install_date",
+          "owner": "Systems Design / Data Quality",
+          "source": "events + users",
+          "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+        },
+        "overall_comparison": {
+          "ok": true,
+          "metric": {
+            "metric_id": "system_open_events_per_eligible_user",
+            "display_name": "人均高级系统打开事件数",
+            "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+            "kind": "event_count_per_user",
+            "numerator": {
+              "event_name": "system_opened"
+            },
+            "denominator": {
+              "event_name": "turn_advanced",
+              "turn_no_gte": 8
+            },
+            "unit": "ratio",
+            "grain": "install_date",
+            "owner": "Systems Design / Data Quality",
+            "source": "events + users",
+            "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+          },
+          "group_by": [],
+          "current_filters": {
+            "start_date": "2026-08-08",
+            "end_date": "2026-08-10",
+            "app_version": "0.9.2"
+          },
+          "baseline_filters": {
+            "start_date": "2026-08-04",
+            "end_date": "2026-08-07",
+            "app_version": "0.9.2"
+          },
+          "comparison_method": "log_rate_ratio_z",
+          "rows": [
+            {
+              "dimensions": {},
+              "current": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 680.0,
+                "denominator": 322.0,
+                "value": 2.111801,
+                "unit": "ratio",
+                "dimensions": {}
+              },
+              "baseline": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 411.0,
+                "denominator": 309.0,
+                "value": 1.330097,
+                "unit": "ratio",
+                "dimensions": {}
+              },
+              "delta": 0.781704,
+              "relative_delta_pct": 58.770458,
+              "z_score": 7.399065,
+              "confidence": "high"
+            }
+          ]
+        },
+        "anomaly_result": {
+          "ok": true,
+          "method": "log_rate_ratio_z",
+          "threshold": {
+            "z_score": 1.96,
+            "min_denominator": 20
+          },
+          "metric": {
+            "metric_id": "system_open_events_per_eligible_user",
+            "display_name": "人均高级系统打开事件数",
+            "description": "system_opened 事件数 / 至少到达第 8 回合的玩家数。",
+            "kind": "event_count_per_user",
+            "numerator": {
+              "event_name": "system_opened"
+            },
+            "denominator": {
+              "event_name": "turn_advanced",
+              "turn_no_gte": 8
+            },
+            "unit": "ratio",
+            "grain": "install_date",
+            "owner": "Systems Design / Data Quality",
+            "source": "events + users",
+            "quality_notes": "事件级强度会被重复上报放大，必须与玩家级采用率和重复签名率一起解读。"
+          },
+          "windows": {
+            "baseline": [
+              "2026-08-04",
+              "2026-08-07"
+            ],
+            "current": [
+              "2026-08-08",
+              "2026-08-10"
+            ]
+          },
+          "dimensions": [
+            "channel"
+          ],
+          "filters": {
+            "app_version": "0.9.2"
+          },
+          "anomaly_count": 1,
+          "anomalies": [
+            {
+              "dimensions": {
+                "channel": "friend_test"
+              },
+              "current": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 356.0,
+                "denominator": 67.0,
+                "value": 5.313433,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "friend_test"
+                }
+              },
+              "baseline": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 97.0,
+                "denominator": 71.0,
+                "value": 1.366197,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "friend_test"
+                }
+              },
+              "delta": 3.947236,
+              "relative_delta_pct": 288.921373,
+              "z_score": 11.858445,
+              "confidence": "high",
+              "direction": "increase",
+              "severity_score": 11.858
+            }
+          ],
+          "all_comparisons": [
+            {
+              "dimensions": {
+                "channel": "campus_demo"
+              },
+              "current": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 132.0,
+                "denominator": 104.0,
+                "value": 1.269231,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "campus_demo"
+                }
+              },
+              "baseline": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 135.0,
+                "denominator": 108.0,
+                "value": 1.25,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "campus_demo"
+                }
+              },
+              "delta": 0.019231,
+              "relative_delta_pct": 1.538462,
+              "z_score": 0.124728,
+              "confidence": "low"
+            },
+            {
+              "dimensions": {
+                "channel": "friend_test"
+              },
+              "current": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 356.0,
+                "denominator": 67.0,
+                "value": 5.313433,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "friend_test"
+                }
+              },
+              "baseline": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 97.0,
+                "denominator": 71.0,
+                "value": 1.366197,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "friend_test"
+                }
+              },
+              "delta": 3.947236,
+              "relative_delta_pct": 288.921373,
+              "z_score": 11.858445,
+              "confidence": "high"
+            },
+            {
+              "dimensions": {
+                "channel": "offline_build"
+              },
+              "current": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 192.0,
+                "denominator": 151.0,
+                "value": 1.271523,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "offline_build"
+                }
+              },
+              "baseline": {
+                "metric_id": "system_open_events_per_eligible_user",
+                "numerator": 179.0,
+                "denominator": 130.0,
+                "value": 1.376923,
+                "unit": "ratio",
+                "dimensions": {
+                  "channel": "offline_build"
+                }
+              },
+              "delta": -0.1054,
+              "relative_delta_pct": -7.654741,
+              "z_score": -0.766476,
+              "confidence": "low"
+            }
+          ],
+          "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+        },
+        "candidates": [
+          {
+            "id": "duplicate_event_reporting",
+            "title": "重复埋点上报放大事件级参与强度",
+            "confidence": "high",
+            "status": "supported_candidate",
+            "evidence_refs": [
+              "E05",
+              "E06"
+            ],
+            "reasoning": "重复签名率变化为 6.245614; 玩家级采用率变化为 1.976035。事件级上升但玩家级采用未同步，是数据质量问题的典型证据组合。"
+          },
+          {
+            "id": "real_usage_expansion",
+            "title": "玩家真实提高了高级系统使用频次",
+            "confidence": "low",
+            "status": "not_supported_yet",
+            "evidence_refs": [
+              "E04"
+            ],
+            "reasoning": "需要玩家级采用率、会话深度或游戏内状态同步上升；当前证据不足。"
+          },
+          {
+            "id": "channel_mix_shift",
+            "title": "渠道结构变化造成聚合指标偏移",
+            "confidence": "low",
+            "status": "alternative",
+            "evidence_refs": [
+              "E03"
+            ],
+            "reasoning": "渠道下钻已定位异常，但仍需校验总体用户构成变化。"
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E01",
+            "title": "get_metric_definition",
+            "digest": "fcf26eeb5ab29fc4",
+            "sql": null
+          },
+          {
+            "evidence_id": "E02",
+            "title": "compare_cohorts",
+            "digest": "43dd4b4168a051d8",
+            "sql": null
+          },
+          {
+            "evidence_id": "E03",
+            "title": "detect_anomalies",
+            "digest": "e4bb3064642c1e38",
+            "sql": null
+          },
+          {
+            "evidence_id": "E04",
+            "title": "compare_cohorts",
+            "digest": "018ee833a4517ec7",
+            "sql": null
+          },
+          {
+            "evidence_id": "E05",
+            "title": "compare_cohorts",
+            "digest": "830e34cdc2ebe927",
+            "sql": null
+          },
+          {
+            "evidence_id": "E06",
+            "title": "query_metrics",
+            "digest": "834f7e9a309a9b66",
+            "sql": "SELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50"
+          }
+        ],
+        "limitations": [
+          "The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code."
+        ]
+      },
+      "elapsed_ms": 0.099,
+      "ok": true,
+      "evidence_id": "E07"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "report_id": "IR-5015DD94CE",
+    "generated_at": "2026-08-30T01:00:20+00:00",
+    "review_status": "human_review_required",
+    "markdown": "# 埋点重复上报导致高级系统参与强度虚高\n\n- Report ID: `IR-5015DD94CE`\n- Generated at: `2026-08-30T01:00:20+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`人均高级系统打开事件数` changed from **1.330** to **2.112** (+0.782).\nThe detector used `log_rate_ratio_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 重复埋点上报放大事件级参与强度\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E05`, `E06`\n- Reasoning: 重复签名率变化为 6.245614; 玩家级采用率变化为 1.976035。事件级上升但玩家级采用未同步，是数据质量问题的典型证据组合。\n\n### 2. 玩家真实提高了高级系统使用频次\n\n- Confidence: `low`\n- Status: `not_supported_yet`\n- Evidence: `E04`\n- Reasoning: 需要玩家级采用率、会话深度或游戏内状态同步上升；当前证据不足。\n\n### 3. 渠道结构变化造成聚合指标偏移\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 渠道下钻已定位异常，但仍需校验总体用户构成变化。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `fcf26eeb5ab29fc4`\n\n### E02 — compare_cohorts\n\nResult digest: `43dd4b4168a051d8`\n\n### E03 — detect_anomalies\n\nResult digest: `e4bb3064642c1e38`\n\n### E04 — compare_cohorts\n\nResult digest: `018ee833a4517ec7`\n\n### E05 — compare_cohorts\n\nResult digest: `830e34cdc2ebe927`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50\n```\n\nResult digest: `834f7e9a309a9b66`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+    "citation_check": {
+      "valid": true,
+      "cited_evidence_ids": [
+        "E03",
+        "E04",
+        "E05",
+        "E06"
+      ],
+      "available_evidence_ids": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06"
+      ],
+      "unknown_references": []
+    }
+  },
+  "elapsed_ms": 359.036
+}

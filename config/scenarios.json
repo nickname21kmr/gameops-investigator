@@ -1,0 +1,41 @@
+{
+  "tutorial_failure": {
+    "title": "教程关键步失败率升高，D1 留存同步下降",
+    "alert_metric": "d1_retention",
+    "related_metrics": ["tutorial_completion_rate", "trade_success_rate", "turn5_reach_rate"],
+    "baseline": {"start_date": "2026-08-07", "end_date": "2026-08-10", "app_version": "0.9.3"},
+    "current": {"start_date": "2026-08-11", "end_date": "2026-08-14", "app_version": "0.9.3"},
+    "breakdown_dimension": "channel",
+    "focus_value": "campus_demo",
+    "expected_root_cause_id": "upstream_tutorial_drop",
+    "evidence_queries": [
+      "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100"
+    ]
+  },
+  "segment_churn": {
+    "title": "新版本局部玩家分群流失，被整体平均值掩盖",
+    "alert_metric": "d1_retention",
+    "related_metrics": ["d3_retention", "turn5_reach_rate"],
+    "baseline": {"start_date": "2026-08-01", "end_date": "2026-08-10", "app_version": "0.9.3", "channel_not": "campus_demo"},
+    "current": {"start_date": "2026-08-11", "end_date": "2026-08-14", "app_version": "0.9.3", "channel_not": "campus_demo"},
+    "breakdown_dimension": "strategy_segment",
+    "focus_value": "leveraged",
+    "expected_root_cause_id": "segment_leveraged_churn",
+    "evidence_queries": [
+      "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100"
+    ]
+  },
+  "duplicate_tracking": {
+    "title": "埋点重复上报导致高级系统参与强度虚高",
+    "alert_metric": "system_open_events_per_eligible_user",
+    "related_metrics": ["system_adoption_rate", "duplicate_signature_rate"],
+    "baseline": {"start_date": "2026-08-04", "end_date": "2026-08-07", "app_version": "0.9.2"},
+    "current": {"start_date": "2026-08-08", "end_date": "2026-08-10", "app_version": "0.9.2"},
+    "breakdown_dimension": "channel",
+    "focus_value": "friend_test",
+    "expected_root_cause_id": "duplicate_event_reporting",
+    "evidence_queries": [
+      "SELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50"
+    ]
+  }
+}

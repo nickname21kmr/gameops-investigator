@@ -1,0 +1,1952 @@
+{
+  "scenario_id": "tutorial_failure",
+  "title": "教程关键步失败率升高，D1 留存同步下降",
+  "mode": "deterministic_replay",
+  "plan": [
+    "Read the metric contract",
+    "Quantify the overall alert",
+    "Break down by channel",
+    "Test upstream and data-quality hypotheses",
+    "Run read-only evidence SQL",
+    "Rank candidates and draft a human-review report"
+  ],
+  "alert_metric": {
+    "metric_id": "d1_retention",
+    "display_name": "D1 留存率",
+    "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+    "kind": "retention",
+    "day_offset": 1,
+    "unit": "percent",
+    "grain": "install_date",
+    "owner": "LiveOps / Product Analytics",
+    "source": "events + users",
+    "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+  },
+  "overall_comparison": {
+    "ok": true,
+    "metric": {
+      "metric_id": "d1_retention",
+      "display_name": "D1 留存率",
+      "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+      "kind": "retention",
+      "day_offset": 1,
+      "unit": "percent",
+      "grain": "install_date",
+      "owner": "LiveOps / Product Analytics",
+      "source": "events + users",
+      "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+    },
+    "group_by": [],
+    "current_filters": {
+      "start_date": "2026-08-11",
+      "end_date": "2026-08-14",
+      "app_version": "0.9.3"
+    },
+    "baseline_filters": {
+      "start_date": "2026-08-07",
+      "end_date": "2026-08-10",
+      "app_version": "0.9.3"
+    },
+    "comparison_method": "two_proportion_z",
+    "rows": [
+      {
+        "dimensions": {},
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 228.0,
+          "denominator": 994.0,
+          "value": 22.937626,
+          "unit": "percent",
+          "dimensions": {}
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 79.0,
+          "denominator": 216.0,
+          "value": 36.574074,
+          "unit": "percent",
+          "dimensions": {}
+        },
+        "delta": -13.636448,
+        "relative_delta_pct": -37.284466,
+        "z_score": -4.174466,
+        "confidence": "high"
+      }
+    ]
+  },
+  "anomaly_result": {
+    "ok": true,
+    "method": "two_proportion_z",
+    "threshold": {
+      "z_score": 1.96,
+      "min_denominator": 20
+    },
+    "metric": {
+      "metric_id": "d1_retention",
+      "display_name": "D1 留存率",
+      "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+      "kind": "retention",
+      "day_offset": 1,
+      "unit": "percent",
+      "grain": "install_date",
+      "owner": "LiveOps / Product Analytics",
+      "source": "events + users",
+      "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+    },
+    "windows": {
+      "baseline": [
+        "2026-08-07",
+        "2026-08-10"
+      ],
+      "current": [
+        "2026-08-11",
+        "2026-08-14"
+      ]
+    },
+    "dimensions": [
+      "channel"
+    ],
+    "filters": {
+      "app_version": "0.9.3"
+    },
+    "anomaly_count": 1,
+    "anomalies": [
+      {
+        "dimensions": {
+          "channel": "campus_demo"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 41.0,
+          "denominator": 343.0,
+          "value": 11.953353,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "campus_demo"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 27.0,
+          "denominator": 64.0,
+          "value": 42.1875,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "campus_demo"
+          }
+        },
+        "delta": -30.234147,
+        "relative_delta_pct": -71.666127,
+        "z_score": -5.952202,
+        "confidence": "high",
+        "direction": "decrease",
+        "severity_score": 5.952
+      }
+    ],
+    "all_comparisons": [
+      {
+        "dimensions": {
+          "channel": "campus_demo"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 41.0,
+          "denominator": 343.0,
+          "value": 11.953353,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "campus_demo"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 27.0,
+          "denominator": 64.0,
+          "value": 42.1875,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "campus_demo"
+          }
+        },
+        "delta": -30.234147,
+        "relative_delta_pct": -71.666127,
+        "z_score": -5.952202,
+        "confidence": "high"
+      },
+      {
+        "dimensions": {
+          "channel": "friend_test"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 52.0,
+          "denominator": 188.0,
+          "value": 27.659574,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "friend_test"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 16.0,
+          "denominator": 56.0,
+          "value": 28.571429,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "friend_test"
+          }
+        },
+        "delta": -0.911854,
+        "relative_delta_pct": -3.191489,
+        "z_score": -0.133593,
+        "confidence": "low"
+      },
+      {
+        "dimensions": {
+          "channel": "offline_build"
+        },
+        "current": {
+          "metric_id": "d1_retention",
+          "numerator": 135.0,
+          "denominator": 463.0,
+          "value": 29.157667,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "offline_build"
+          }
+        },
+        "baseline": {
+          "metric_id": "d1_retention",
+          "numerator": 36.0,
+          "denominator": 96.0,
+          "value": 37.5,
+          "unit": "percent",
+          "dimensions": {
+            "channel": "offline_build"
+          }
+        },
+        "delta": -8.342333,
+        "relative_delta_pct": -22.24622,
+        "z_score": -1.614379,
+        "confidence": "low"
+      }
+    ],
+    "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+  },
+  "related_comparisons": {
+    "tutorial_completion_rate": {
+      "ok": true,
+      "metric": {
+        "metric_id": "tutorial_completion_rate",
+        "display_name": "新手教程关键步完成率",
+        "description": "完成 opening_item_selected 的去重玩家数 / 触发 new_run_start 的去重玩家数。",
+        "kind": "distinct_user_conversion",
+        "numerator": {
+          "event_name": "opening_item_selected"
+        },
+        "denominator": {
+          "event_name": "new_run_start"
+        },
+        "unit": "percent",
+        "grain": "install_date",
+        "owner": "Game Design / LiveOps",
+        "source": "events + users",
+        "quality_notes": "按玩家去重；同一玩家重复上报不提高完成率。"
+      },
+      "group_by": [
+        "channel"
+      ],
+      "current_filters": {
+        "start_date": "2026-08-11",
+        "end_date": "2026-08-14",
+        "app_version": "0.9.3"
+      },
+      "baseline_filters": {
+        "start_date": "2026-08-07",
+        "end_date": "2026-08-10",
+        "app_version": "0.9.3"
+      },
+      "comparison_method": "two_proportion_z",
+      "rows": [
+        {
+          "dimensions": {
+            "channel": "campus_demo"
+          },
+          "current": {
+            "metric_id": "tutorial_completion_rate",
+            "numerator": 97.0,
+            "denominator": 343.0,
+            "value": 28.279883,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "baseline": {
+            "metric_id": "tutorial_completion_rate",
+            "numerator": 58.0,
+            "denominator": 64.0,
+            "value": 90.625,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "delta": -62.345117,
+          "relative_delta_pct": -68.794611,
+          "z_score": -9.429107,
+          "confidence": "high"
+        },
+        {
+          "dimensions": {
+            "channel": "friend_test"
+          },
+          "current": {
+            "metric_id": "tutorial_completion_rate",
+            "numerator": 176.0,
+            "denominator": 188.0,
+            "value": 93.617021,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "baseline": {
+            "metric_id": "tutorial_completion_rate",
+            "numerator": 50.0,
+            "denominator": 56.0,
+            "value": 89.285714,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "delta": 4.331307,
+          "relative_delta_pct": 4.851064,
+          "z_score": 1.08842,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "channel": "offline_build"
+          },
+          "current": {
+            "metric_id": "tutorial_completion_rate",
+            "numerator": 419.0,
+            "denominator": 463.0,
+            "value": 90.49676,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "baseline": {
+            "metric_id": "tutorial_completion_rate",
+            "numerator": 90.0,
+            "denominator": 96.0,
+            "value": 93.75,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "delta": -3.25324,
+          "relative_delta_pct": -3.470122,
+          "z_score": -1.016493,
+          "confidence": "low"
+        }
+      ]
+    },
+    "trade_success_rate": {
+      "ok": true,
+      "metric": {
+        "metric_id": "trade_success_rate",
+        "display_name": "首笔交易成功率",
+        "description": "至少一次 trade_order_result=result:success 的玩家数 / 至少触发一次交易结果的玩家数。",
+        "kind": "distinct_user_conversion",
+        "numerator": {
+          "event_name": "trade_order_result",
+          "result": "success"
+        },
+        "denominator": {
+          "event_name": "trade_order_result"
+        },
+        "unit": "percent",
+        "grain": "install_date",
+        "owner": "Game Design / LiveOps",
+        "source": "events + users",
+        "quality_notes": "玩家级口径，避免重试次数造成成功率膨胀。"
+      },
+      "group_by": [
+        "channel"
+      ],
+      "current_filters": {
+        "start_date": "2026-08-11",
+        "end_date": "2026-08-14",
+        "app_version": "0.9.3"
+      },
+      "baseline_filters": {
+        "start_date": "2026-08-07",
+        "end_date": "2026-08-10",
+        "app_version": "0.9.3"
+      },
+      "comparison_method": "two_proportion_z",
+      "rows": [
+        {
+          "dimensions": {
+            "channel": "campus_demo"
+          },
+          "current": {
+            "metric_id": "trade_success_rate",
+            "numerator": 81.0,
+            "denominator": 93.0,
+            "value": 87.096774,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "baseline": {
+            "metric_id": "trade_success_rate",
+            "numerator": 49.0,
+            "denominator": 55.0,
+            "value": 89.090909,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "delta": -1.994135,
+          "relative_delta_pct": -2.238315,
+          "z_score": -0.358674,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "channel": "friend_test"
+          },
+          "current": {
+            "metric_id": "trade_success_rate",
+            "numerator": 150.0,
+            "denominator": 167.0,
+            "value": 89.820359,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "baseline": {
+            "metric_id": "trade_success_rate",
+            "numerator": 41.0,
+            "denominator": 45.0,
+            "value": 91.111111,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "delta": -1.290752,
+          "relative_delta_pct": -1.416679,
+          "z_score": -0.257246,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "channel": "offline_build"
+          },
+          "current": {
+            "metric_id": "trade_success_rate",
+            "numerator": 362.0,
+            "denominator": 391.0,
+            "value": 92.58312,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "baseline": {
+            "metric_id": "trade_success_rate",
+            "numerator": 75.0,
+            "denominator": 86.0,
+            "value": 87.209302,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "delta": 5.373818,
+          "relative_delta_pct": 6.161978,
+          "z_score": 1.62783,
+          "confidence": "low"
+        }
+      ]
+    },
+    "turn5_reach_rate": {
+      "ok": true,
+      "metric": {
+        "metric_id": "turn5_reach_rate",
+        "display_name": "第 5 回合到达率",
+        "description": "至少到达第 5 回合的玩家数 / 开始新局的玩家数。",
+        "kind": "distinct_user_conversion",
+        "numerator": {
+          "event_name": "turn_advanced",
+          "turn_no_gte": 5
+        },
+        "denominator": {
+          "event_name": "new_run_start"
+        },
+        "unit": "percent",
+        "grain": "install_date",
+        "owner": "Game Design / LiveOps",
+        "source": "events + users",
+        "quality_notes": "玩家级漏斗，不累计重复到达事件。"
+      },
+      "group_by": [
+        "channel"
+      ],
+      "current_filters": {
+        "start_date": "2026-08-11",
+        "end_date": "2026-08-14",
+        "app_version": "0.9.3"
+      },
+      "baseline_filters": {
+        "start_date": "2026-08-07",
+        "end_date": "2026-08-10",
+        "app_version": "0.9.3"
+      },
+      "comparison_method": "two_proportion_z",
+      "rows": [
+        {
+          "dimensions": {
+            "channel": "campus_demo"
+          },
+          "current": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 61.0,
+            "denominator": 343.0,
+            "value": 17.784257,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "baseline": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 39.0,
+            "denominator": 64.0,
+            "value": 60.9375,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "campus_demo"
+            }
+          },
+          "delta": -43.153243,
+          "relative_delta_pct": -70.815579,
+          "z_score": -7.361707,
+          "confidence": "high"
+        },
+        {
+          "dimensions": {
+            "channel": "friend_test"
+          },
+          "current": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 103.0,
+            "denominator": 188.0,
+            "value": 54.787234,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "baseline": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 33.0,
+            "denominator": 56.0,
+            "value": 58.928571,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "friend_test"
+            }
+          },
+          "delta": -4.141337,
+          "relative_delta_pct": -7.027724,
+          "z_score": -0.54768,
+          "confidence": "low"
+        },
+        {
+          "dimensions": {
+            "channel": "offline_build"
+          },
+          "current": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 252.0,
+            "denominator": 463.0,
+            "value": 54.427646,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "baseline": {
+            "metric_id": "turn5_reach_rate",
+            "numerator": 53.0,
+            "denominator": 96.0,
+            "value": 55.208333,
+            "unit": "percent",
+            "dimensions": {
+              "channel": "offline_build"
+            }
+          },
+          "delta": -0.780688,
+          "relative_delta_pct": -1.414076,
+          "z_score": -0.139811,
+          "confidence": "low"
+        }
+      ]
+    }
+  },
+  "candidates": [
+    {
+      "id": "upstream_tutorial_drop",
+      "title": "教程关键步完成下降是 D1 留存下滑的首要上游候选",
+      "confidence": "high",
+      "status": "supported_candidate",
+      "evidence_refs": [
+        "E03",
+        "E04",
+        "E07"
+      ],
+      "reasoning": "campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。"
+    },
+    {
+      "id": "downstream_trade_regression",
+      "title": "交易环节或后续回合体验退化",
+      "confidence": "low",
+      "status": "secondary",
+      "evidence_refs": [
+        "E05",
+        "E06"
+      ],
+      "reasoning": "下游指标受上游样本选择影响，必须先处理教程漏斗变化。"
+    },
+    {
+      "id": "channel_mix_shift",
+      "title": "渠道用户结构变化",
+      "confidence": "low",
+      "status": "alternative",
+      "evidence_refs": [
+        "E03"
+      ],
+      "reasoning": "需要额外的渠道获客与设备属性才能进一步确认。"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "E01",
+      "title": "get_metric_definition",
+      "digest": "153260e503bc18f1",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "definition": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        }
+      }
+    },
+    {
+      "evidence_id": "E02",
+      "title": "compare_cohorts",
+      "digest": "ac74434f5c17dbc0",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        },
+        "group_by": [],
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {},
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 228.0,
+              "denominator": 994.0,
+              "value": 22.937626,
+              "unit": "percent",
+              "dimensions": {}
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 79.0,
+              "denominator": 216.0,
+              "value": 36.574074,
+              "unit": "percent",
+              "dimensions": {}
+            },
+            "delta": -13.636448,
+            "relative_delta_pct": -37.284466,
+            "z_score": -4.174466,
+            "confidence": "high"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E03",
+      "title": "detect_anomalies",
+      "digest": "15fbbef982a3bbbe",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "method": "two_proportion_z",
+        "threshold": {
+          "z_score": 1.96,
+          "min_denominator": 20
+        },
+        "metric": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        },
+        "windows": {
+          "baseline": [
+            "2026-08-07",
+            "2026-08-10"
+          ],
+          "current": [
+            "2026-08-11",
+            "2026-08-14"
+          ]
+        },
+        "dimensions": [
+          "channel"
+        ],
+        "filters": {
+          "app_version": "0.9.3"
+        },
+        "anomaly_count": 1,
+        "anomalies": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 41.0,
+              "denominator": 343.0,
+              "value": 11.953353,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 27.0,
+              "denominator": 64.0,
+              "value": 42.1875,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": -30.234147,
+            "relative_delta_pct": -71.666127,
+            "z_score": -5.952202,
+            "confidence": "high",
+            "direction": "decrease",
+            "severity_score": 5.952
+          }
+        ],
+        "all_comparisons": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 41.0,
+              "denominator": 343.0,
+              "value": 11.953353,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 27.0,
+              "denominator": 64.0,
+              "value": 42.1875,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": -30.234147,
+            "relative_delta_pct": -71.666127,
+            "z_score": -5.952202,
+            "confidence": "high"
+          },
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 52.0,
+              "denominator": 188.0,
+              "value": 27.659574,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 16.0,
+              "denominator": 56.0,
+              "value": 28.571429,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": -0.911854,
+            "relative_delta_pct": -3.191489,
+            "z_score": -0.133593,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "offline_build"
+            },
+            "current": {
+              "metric_id": "d1_retention",
+              "numerator": 135.0,
+              "denominator": 463.0,
+              "value": 29.157667,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "baseline": {
+              "metric_id": "d1_retention",
+              "numerator": 36.0,
+              "denominator": 96.0,
+              "value": 37.5,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "delta": -8.342333,
+            "relative_delta_pct": -22.24622,
+            "z_score": -1.614379,
+            "confidence": "low"
+          }
+        ],
+        "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+      }
+    },
+    {
+      "evidence_id": "E04",
+      "title": "compare_cohorts",
+      "digest": "b0e42cf4a5555d6a",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "tutorial_completion_rate",
+          "display_name": "新手教程关键步完成率",
+          "description": "完成 opening_item_selected 的去重玩家数 / 触发 new_run_start 的去重玩家数。",
+          "kind": "distinct_user_conversion",
+          "numerator": {
+            "event_name": "opening_item_selected"
+          },
+          "denominator": {
+            "event_name": "new_run_start"
+          },
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "Game Design / LiveOps",
+          "source": "events + users",
+          "quality_notes": "按玩家去重；同一玩家重复上报不提高完成率。"
+        },
+        "group_by": [
+          "channel"
+        ],
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "tutorial_completion_rate",
+              "numerator": 97.0,
+              "denominator": 343.0,
+              "value": 28.279883,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "tutorial_completion_rate",
+              "numerator": 58.0,
+              "denominator": 64.0,
+              "value": 90.625,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": -62.345117,
+            "relative_delta_pct": -68.794611,
+            "z_score": -9.429107,
+            "confidence": "high"
+          },
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "tutorial_completion_rate",
+              "numerator": 176.0,
+              "denominator": 188.0,
+              "value": 93.617021,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "tutorial_completion_rate",
+              "numerator": 50.0,
+              "denominator": 56.0,
+              "value": 89.285714,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": 4.331307,
+            "relative_delta_pct": 4.851064,
+            "z_score": 1.08842,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "offline_build"
+            },
+            "current": {
+              "metric_id": "tutorial_completion_rate",
+              "numerator": 419.0,
+              "denominator": 463.0,
+              "value": 90.49676,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "baseline": {
+              "metric_id": "tutorial_completion_rate",
+              "numerator": 90.0,
+              "denominator": 96.0,
+              "value": 93.75,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "delta": -3.25324,
+            "relative_delta_pct": -3.470122,
+            "z_score": -1.016493,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E05",
+      "title": "compare_cohorts",
+      "digest": "99e02538c4940307",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "trade_success_rate",
+          "display_name": "首笔交易成功率",
+          "description": "至少一次 trade_order_result=result:success 的玩家数 / 至少触发一次交易结果的玩家数。",
+          "kind": "distinct_user_conversion",
+          "numerator": {
+            "event_name": "trade_order_result",
+            "result": "success"
+          },
+          "denominator": {
+            "event_name": "trade_order_result"
+          },
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "Game Design / LiveOps",
+          "source": "events + users",
+          "quality_notes": "玩家级口径，避免重试次数造成成功率膨胀。"
+        },
+        "group_by": [
+          "channel"
+        ],
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "trade_success_rate",
+              "numerator": 81.0,
+              "denominator": 93.0,
+              "value": 87.096774,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "trade_success_rate",
+              "numerator": 49.0,
+              "denominator": 55.0,
+              "value": 89.090909,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": -1.994135,
+            "relative_delta_pct": -2.238315,
+            "z_score": -0.358674,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "trade_success_rate",
+              "numerator": 150.0,
+              "denominator": 167.0,
+              "value": 89.820359,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "trade_success_rate",
+              "numerator": 41.0,
+              "denominator": 45.0,
+              "value": 91.111111,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": -1.290752,
+            "relative_delta_pct": -1.416679,
+            "z_score": -0.257246,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "offline_build"
+            },
+            "current": {
+              "metric_id": "trade_success_rate",
+              "numerator": 362.0,
+              "denominator": 391.0,
+              "value": 92.58312,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "baseline": {
+              "metric_id": "trade_success_rate",
+              "numerator": 75.0,
+              "denominator": 86.0,
+              "value": 87.209302,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "delta": 5.373818,
+            "relative_delta_pct": 6.161978,
+            "z_score": 1.62783,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E06",
+      "title": "compare_cohorts",
+      "digest": "4fd5735f01c40174",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "metric": {
+          "metric_id": "turn5_reach_rate",
+          "display_name": "第 5 回合到达率",
+          "description": "至少到达第 5 回合的玩家数 / 开始新局的玩家数。",
+          "kind": "distinct_user_conversion",
+          "numerator": {
+            "event_name": "turn_advanced",
+            "turn_no_gte": 5
+          },
+          "denominator": {
+            "event_name": "new_run_start"
+          },
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "Game Design / LiveOps",
+          "source": "events + users",
+          "quality_notes": "玩家级漏斗，不累计重复到达事件。"
+        },
+        "group_by": [
+          "channel"
+        ],
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "comparison_method": "two_proportion_z",
+        "rows": [
+          {
+            "dimensions": {
+              "channel": "campus_demo"
+            },
+            "current": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 61.0,
+              "denominator": 343.0,
+              "value": 17.784257,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "baseline": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 39.0,
+              "denominator": 64.0,
+              "value": 60.9375,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "campus_demo"
+              }
+            },
+            "delta": -43.153243,
+            "relative_delta_pct": -70.815579,
+            "z_score": -7.361707,
+            "confidence": "high"
+          },
+          {
+            "dimensions": {
+              "channel": "friend_test"
+            },
+            "current": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 103.0,
+              "denominator": 188.0,
+              "value": 54.787234,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "baseline": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 33.0,
+              "denominator": 56.0,
+              "value": 58.928571,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "friend_test"
+              }
+            },
+            "delta": -4.141337,
+            "relative_delta_pct": -7.027724,
+            "z_score": -0.54768,
+            "confidence": "low"
+          },
+          {
+            "dimensions": {
+              "channel": "offline_build"
+            },
+            "current": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 252.0,
+              "denominator": 463.0,
+              "value": 54.427646,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "baseline": {
+              "metric_id": "turn5_reach_rate",
+              "numerator": 53.0,
+              "denominator": 96.0,
+              "value": 55.208333,
+              "unit": "percent",
+              "dimensions": {
+                "channel": "offline_build"
+              }
+            },
+            "delta": -0.780688,
+            "relative_delta_pct": -1.414076,
+            "z_score": -0.139811,
+            "confidence": "low"
+          }
+        ]
+      }
+    },
+    {
+      "evidence_id": "E07",
+      "title": "query_metrics",
+      "digest": "18146ab4434db6df",
+      "sql": "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100",
+      "result": {
+        "ok": true,
+        "columns": [
+          "install_date",
+          "channel",
+          "installs",
+          "tutorial_completed"
+        ],
+        "rows": [
+          {
+            "install_date": "2026-08-07",
+            "channel": "campus_demo",
+            "installs": 24,
+            "tutorial_completed": 23
+          },
+          {
+            "install_date": "2026-08-07",
+            "channel": "friend_test",
+            "installs": 13,
+            "tutorial_completed": 13
+          },
+          {
+            "install_date": "2026-08-07",
+            "channel": "offline_build",
+            "installs": 23,
+            "tutorial_completed": 22
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "campus_demo",
+            "installs": 10,
+            "tutorial_completed": 7
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "friend_test",
+            "installs": 14,
+            "tutorial_completed": 14
+          },
+          {
+            "install_date": "2026-08-08",
+            "channel": "offline_build",
+            "installs": 29,
+            "tutorial_completed": 27
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "campus_demo",
+            "installs": 15,
+            "tutorial_completed": 14
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "friend_test",
+            "installs": 12,
+            "tutorial_completed": 10
+          },
+          {
+            "install_date": "2026-08-09",
+            "channel": "offline_build",
+            "installs": 25,
+            "tutorial_completed": 23
+          },
+          {
+            "install_date": "2026-08-10",
+            "channel": "campus_demo",
+            "installs": 15,
+            "tutorial_completed": 14
+          },
+          {
+            "install_date": "2026-08-10",
+            "channel": "friend_test",
+            "installs": 17,
+            "tutorial_completed": 13
+          },
+          {
+            "install_date": "2026-08-10",
+            "channel": "offline_build",
+            "installs": 19,
+            "tutorial_completed": 18
+          },
+          {
+            "install_date": "2026-08-11",
+            "channel": "campus_demo",
+            "installs": 85,
+            "tutorial_completed": 25
+          },
+          {
+            "install_date": "2026-08-11",
+            "channel": "friend_test",
+            "installs": 51,
+            "tutorial_completed": 47
+          },
+          {
+            "install_date": "2026-08-11",
+            "channel": "offline_build",
+            "installs": 121,
+            "tutorial_completed": 115
+          },
+          {
+            "install_date": "2026-08-12",
+            "channel": "campus_demo",
+            "installs": 77,
+            "tutorial_completed": 17
+          },
+          {
+            "install_date": "2026-08-12",
+            "channel": "friend_test",
+            "installs": 46,
+            "tutorial_completed": 45
+          },
+          {
+            "install_date": "2026-08-12",
+            "channel": "offline_build",
+            "installs": 129,
+            "tutorial_completed": 114
+          },
+          {
+            "install_date": "2026-08-13",
+            "channel": "campus_demo",
+            "installs": 89,
+            "tutorial_completed": 29
+          },
+          {
+            "install_date": "2026-08-13",
+            "channel": "friend_test",
+            "installs": 44,
+            "tutorial_completed": 41
+          },
+          {
+            "install_date": "2026-08-13",
+            "channel": "offline_build",
+            "installs": 105,
+            "tutorial_completed": 93
+          },
+          {
+            "install_date": "2026-08-14",
+            "channel": "campus_demo",
+            "installs": 92,
+            "tutorial_completed": 26
+          },
+          {
+            "install_date": "2026-08-14",
+            "channel": "friend_test",
+            "installs": 47,
+            "tutorial_completed": 43
+          },
+          {
+            "install_date": "2026-08-14",
+            "channel": "offline_build",
+            "installs": 108,
+            "tutorial_completed": 97
+          }
+        ],
+        "row_count": 24,
+        "truncated": false,
+        "elapsed_ms": 52.606,
+        "executed_sql": "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100",
+        "policy": "read_only_allowlist"
+      }
+    },
+    {
+      "evidence_id": "E08",
+      "title": "draft_incident_report",
+      "digest": "e561ed34ce1c999f",
+      "sql": null,
+      "result": {
+        "ok": true,
+        "report_id": "IR-BCA45CB5B0",
+        "generated_at": "2026-08-30T01:00:19+00:00",
+        "review_status": "human_review_required",
+        "markdown": "# 教程关键步失败率升高，D1 留存同步下降\n\n- Report ID: `IR-BCA45CB5B0`\n- Generated at: `2026-08-30T01:00:19+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **36.57%** to **22.94%** (-13.64 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 教程关键步完成下降是 D1 留存下滑的首要上游候选\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E04`, `E07`\n- Reasoning: campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。\n\n### 2. 交易环节或后续回合体验退化\n\n- Confidence: `low`\n- Status: `secondary`\n- Evidence: `E05`, `E06`\n- Reasoning: 下游指标受上游样本选择影响，必须先处理教程漏斗变化。\n\n### 3. 渠道用户结构变化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 需要额外的渠道获客与设备属性才能进一步确认。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `ac74434f5c17dbc0`\n\n### E03 — detect_anomalies\n\nResult digest: `15fbbef982a3bbbe`\n\n### E04 — compare_cohorts\n\nResult digest: `b0e42cf4a5555d6a`\n\n### E05 — compare_cohorts\n\nResult digest: `99e02538c4940307`\n\n### E06 — compare_cohorts\n\nResult digest: `4fd5735f01c40174`\n\n### E07 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100\n```\n\nResult digest: `18146ab4434db6df`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+        "citation_check": {
+          "valid": true,
+          "cited_evidence_ids": [
+            "E03",
+            "E04",
+            "E05",
+            "E06",
+            "E07"
+          ],
+          "available_evidence_ids": [
+            "E01",
+            "E02",
+            "E03",
+            "E04",
+            "E05",
+            "E06",
+            "E07"
+          ],
+          "unknown_references": []
+        }
+      }
+    }
+  ],
+  "trace": [
+    {
+      "tool": "get_metric_definition",
+      "arguments": {
+        "metric_name": "d1_retention"
+      },
+      "elapsed_ms": 0.854,
+      "ok": true,
+      "evidence_id": "E01"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "d1_retention",
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "group_by": []
+      },
+      "elapsed_ms": 36.693,
+      "ok": true,
+      "evidence_id": "E02"
+    },
+    {
+      "tool": "detect_anomalies",
+      "arguments": {
+        "metric_name": "d1_retention",
+        "current_start": "2026-08-11",
+        "current_end": "2026-08-14",
+        "baseline_start": "2026-08-07",
+        "baseline_end": "2026-08-10",
+        "dimensions": [
+          "channel"
+        ],
+        "filters": {
+          "app_version": "0.9.3"
+        },
+        "min_denominator": 20,
+        "z_threshold": 1.96
+      },
+      "elapsed_ms": 55.992,
+      "ok": true,
+      "evidence_id": "E03"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "tutorial_completion_rate",
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "group_by": [
+          "channel"
+        ]
+      },
+      "elapsed_ms": 37.159,
+      "ok": true,
+      "evidence_id": "E04"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "trade_success_rate",
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "group_by": [
+          "channel"
+        ]
+      },
+      "elapsed_ms": 58.861,
+      "ok": true,
+      "evidence_id": "E05"
+    },
+    {
+      "tool": "compare_cohorts",
+      "arguments": {
+        "metric_name": "turn5_reach_rate",
+        "current_filters": {
+          "start_date": "2026-08-11",
+          "end_date": "2026-08-14",
+          "app_version": "0.9.3"
+        },
+        "baseline_filters": {
+          "start_date": "2026-08-07",
+          "end_date": "2026-08-10",
+          "app_version": "0.9.3"
+        },
+        "group_by": [
+          "channel"
+        ]
+      },
+      "elapsed_ms": 60.61,
+      "ok": true,
+      "evidence_id": "E06"
+    },
+    {
+      "tool": "query_metrics",
+      "arguments": {
+        "sql": "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100",
+        "row_limit": 100,
+        "timeout_ms": 3000
+      },
+      "elapsed_ms": 52.801,
+      "ok": true,
+      "evidence_id": "E07"
+    },
+    {
+      "tool": "draft_incident_report",
+      "arguments": {
+        "title": "教程关键步失败率升高，D1 留存同步下降",
+        "alert_metric": {
+          "metric_id": "d1_retention",
+          "display_name": "D1 留存率",
+          "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+          "kind": "retention",
+          "day_offset": 1,
+          "unit": "percent",
+          "grain": "install_date",
+          "owner": "LiveOps / Product Analytics",
+          "source": "events + users",
+          "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+        },
+        "overall_comparison": {
+          "ok": true,
+          "metric": {
+            "metric_id": "d1_retention",
+            "display_name": "D1 留存率",
+            "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+            "kind": "retention",
+            "day_offset": 1,
+            "unit": "percent",
+            "grain": "install_date",
+            "owner": "LiveOps / Product Analytics",
+            "source": "events + users",
+            "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+          },
+          "group_by": [],
+          "current_filters": {
+            "start_date": "2026-08-11",
+            "end_date": "2026-08-14",
+            "app_version": "0.9.3"
+          },
+          "baseline_filters": {
+            "start_date": "2026-08-07",
+            "end_date": "2026-08-10",
+            "app_version": "0.9.3"
+          },
+          "comparison_method": "two_proportion_z",
+          "rows": [
+            {
+              "dimensions": {},
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 228.0,
+                "denominator": 994.0,
+                "value": 22.937626,
+                "unit": "percent",
+                "dimensions": {}
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 79.0,
+                "denominator": 216.0,
+                "value": 36.574074,
+                "unit": "percent",
+                "dimensions": {}
+              },
+              "delta": -13.636448,
+              "relative_delta_pct": -37.284466,
+              "z_score": -4.174466,
+              "confidence": "high"
+            }
+          ]
+        },
+        "anomaly_result": {
+          "ok": true,
+          "method": "two_proportion_z",
+          "threshold": {
+            "z_score": 1.96,
+            "min_denominator": 20
+          },
+          "metric": {
+            "metric_id": "d1_retention",
+            "display_name": "D1 留存率",
+            "description": "安装后第 1 个自然日触发 session_start 的去重玩家数 / 安装 cohort 玩家数。",
+            "kind": "retention",
+            "day_offset": 1,
+            "unit": "percent",
+            "grain": "install_date",
+            "owner": "LiveOps / Product Analytics",
+            "source": "events + users",
+            "quality_notes": "分母是安装版本的新玩家；分子按 user_id 去重。"
+          },
+          "windows": {
+            "baseline": [
+              "2026-08-07",
+              "2026-08-10"
+            ],
+            "current": [
+              "2026-08-11",
+              "2026-08-14"
+            ]
+          },
+          "dimensions": [
+            "channel"
+          ],
+          "filters": {
+            "app_version": "0.9.3"
+          },
+          "anomaly_count": 1,
+          "anomalies": [
+            {
+              "dimensions": {
+                "channel": "campus_demo"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 41.0,
+                "denominator": 343.0,
+                "value": 11.953353,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "campus_demo"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 27.0,
+                "denominator": 64.0,
+                "value": 42.1875,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "campus_demo"
+                }
+              },
+              "delta": -30.234147,
+              "relative_delta_pct": -71.666127,
+              "z_score": -5.952202,
+              "confidence": "high",
+              "direction": "decrease",
+              "severity_score": 5.952
+            }
+          ],
+          "all_comparisons": [
+            {
+              "dimensions": {
+                "channel": "campus_demo"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 41.0,
+                "denominator": 343.0,
+                "value": 11.953353,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "campus_demo"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 27.0,
+                "denominator": 64.0,
+                "value": 42.1875,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "campus_demo"
+                }
+              },
+              "delta": -30.234147,
+              "relative_delta_pct": -71.666127,
+              "z_score": -5.952202,
+              "confidence": "high"
+            },
+            {
+              "dimensions": {
+                "channel": "friend_test"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 52.0,
+                "denominator": 188.0,
+                "value": 27.659574,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "friend_test"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 16.0,
+                "denominator": 56.0,
+                "value": 28.571429,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "friend_test"
+                }
+              },
+              "delta": -0.911854,
+              "relative_delta_pct": -3.191489,
+              "z_score": -0.133593,
+              "confidence": "low"
+            },
+            {
+              "dimensions": {
+                "channel": "offline_build"
+              },
+              "current": {
+                "metric_id": "d1_retention",
+                "numerator": 135.0,
+                "denominator": 463.0,
+                "value": 29.157667,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "offline_build"
+                }
+              },
+              "baseline": {
+                "metric_id": "d1_retention",
+                "numerator": 36.0,
+                "denominator": 96.0,
+                "value": 37.5,
+                "unit": "percent",
+                "dimensions": {
+                  "channel": "offline_build"
+                }
+              },
+              "delta": -8.342333,
+              "relative_delta_pct": -22.24622,
+              "z_score": -1.614379,
+              "confidence": "low"
+            }
+          ],
+          "interpretation_boundary": "Statistical association is not causal proof; small cohorts are explicitly downgraded."
+        },
+        "candidates": [
+          {
+            "id": "upstream_tutorial_drop",
+            "title": "教程关键步完成下降是 D1 留存下滑的首要上游候选",
+            "confidence": "high",
+            "status": "supported_candidate",
+            "evidence_refs": [
+              "E03",
+              "E04",
+              "E07"
+            ],
+            "reasoning": "campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。"
+          },
+          {
+            "id": "downstream_trade_regression",
+            "title": "交易环节或后续回合体验退化",
+            "confidence": "low",
+            "status": "secondary",
+            "evidence_refs": [
+              "E05",
+              "E06"
+            ],
+            "reasoning": "下游指标受上游样本选择影响，必须先处理教程漏斗变化。"
+          },
+          {
+            "id": "channel_mix_shift",
+            "title": "渠道用户结构变化",
+            "confidence": "low",
+            "status": "alternative",
+            "evidence_refs": [
+              "E03"
+            ],
+            "reasoning": "需要额外的渠道获客与设备属性才能进一步确认。"
+          }
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E01",
+            "title": "get_metric_definition",
+            "digest": "153260e503bc18f1",
+            "sql": null
+          },
+          {
+            "evidence_id": "E02",
+            "title": "compare_cohorts",
+            "digest": "ac74434f5c17dbc0",
+            "sql": null
+          },
+          {
+            "evidence_id": "E03",
+            "title": "detect_anomalies",
+            "digest": "15fbbef982a3bbbe",
+            "sql": null
+          },
+          {
+            "evidence_id": "E04",
+            "title": "compare_cohorts",
+            "digest": "b0e42cf4a5555d6a",
+            "sql": null
+          },
+          {
+            "evidence_id": "E05",
+            "title": "compare_cohorts",
+            "digest": "99e02538c4940307",
+            "sql": null
+          },
+          {
+            "evidence_id": "E06",
+            "title": "compare_cohorts",
+            "digest": "4fd5735f01c40174",
+            "sql": null
+          },
+          {
+            "evidence_id": "E07",
+            "title": "query_metrics",
+            "digest": "18146ab4434db6df",
+            "sql": "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100"
+          }
+        ],
+        "limitations": [
+          "The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code."
+        ]
+      },
+      "elapsed_ms": 0.137,
+      "ok": true,
+      "evidence_id": "E08"
+    }
+  ],
+  "report": {
+    "ok": true,
+    "report_id": "IR-BCA45CB5B0",
+    "generated_at": "2026-08-30T01:00:19+00:00",
+    "review_status": "human_review_required",
+    "markdown": "# 教程关键步失败率升高，D1 留存同步下降\n\n- Report ID: `IR-BCA45CB5B0`\n- Generated at: `2026-08-30T01:00:19+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **36.57%** to **22.94%** (-13.64 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 教程关键步完成下降是 D1 留存下滑的首要上游候选\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E04`, `E07`\n- Reasoning: campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。\n\n### 2. 交易环节或后续回合体验退化\n\n- Confidence: `low`\n- Status: `secondary`\n- Evidence: `E05`, `E06`\n- Reasoning: 下游指标受上游样本选择影响，必须先处理教程漏斗变化。\n\n### 3. 渠道用户结构变化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 需要额外的渠道获客与设备属性才能进一步确认。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `ac74434f5c17dbc0`\n\n### E03 — detect_anomalies\n\nResult digest: `15fbbef982a3bbbe`\n\n### E04 — compare_cohorts\n\nResult digest: `b0e42cf4a5555d6a`\n\n### E05 — compare_cohorts\n\nResult digest: `99e02538c4940307`\n\n### E06 — compare_cohorts\n\nResult digest: `4fd5735f01c40174`\n\n### E07 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100\n```\n\nResult digest: `18146ab4434db6df`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+    "citation_check": {
+      "valid": true,
+      "cited_evidence_ids": [
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "available_evidence_ids": [
+        "E01",
+        "E02",
+        "E03",
+        "E04",
+        "E05",
+        "E06",
+        "E07"
+      ],
+      "unknown_references": []
+    }
+  },
+  "elapsed_ms": 303.899
+}

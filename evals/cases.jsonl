@@ -1,0 +1,41 @@
+{"id":"route_001","type":"tool_routing","prompt":"D1 留存率的分母和分子口径是什么？","expected_tool":"get_metric_definition"}
+{"id":"route_002","type":"tool_routing","prompt":"解释高级系统采用率的数据来源和去重方式。","expected_tool":"get_metric_definition"}
+{"id":"route_003","type":"tool_routing","prompt":"这个指标由哪个团队负责，质量注意事项是什么？","expected_tool":"get_metric_definition"}
+{"id":"route_004","type":"tool_routing","prompt":"请执行 SELECT app_version, COUNT(*) FROM users GROUP BY app_version。","expected_tool":"query_metrics"}
+{"id":"route_005","type":"tool_routing","prompt":"用 SQL 下钻 friend_test 渠道的 system_opened 事件。","expected_tool":"query_metrics"}
+{"id":"route_006","type":"tool_routing","prompt":"查看重复签名最多的 20 条明细。","expected_tool":"query_metrics"}
+{"id":"route_007","type":"tool_routing","prompt":"比较 0.9.2 与 0.9.3 的教程完成率。","expected_tool":"compare_cohorts"}
+{"id":"route_008","type":"tool_routing","prompt":"对比 campus_demo 和 friend_test 两个 cohort。","expected_tool":"compare_cohorts"}
+{"id":"route_009","type":"tool_routing","prompt":"按 strategy_segment 比较当前窗口和基线窗口。","expected_tool":"compare_cohorts"}
+{"id":"route_010","type":"tool_routing","prompt":"D1 的下降是否达到统计异常阈值？","expected_tool":"detect_anomalies"}
+{"id":"route_011","type":"tool_routing","prompt":"检测最近四天 tutorial_completion_rate 的异常。","expected_tool":"detect_anomalies"}
+{"id":"route_012","type":"tool_routing","prompt":"按渠道扫描高级系统打开强度的异常点。","expected_tool":"detect_anomalies"}
+{"id":"route_013","type":"tool_routing","prompt":"把调查证据整理成人工复核事故报告。","expected_tool":"draft_incident_report"}
+{"id":"route_014","type":"tool_routing","prompt":"生成包含 SQL、置信度和限制的报告草稿。","expected_tool":"draft_incident_report"}
+{"id":"route_015","type":"tool_routing","prompt":"请给这次告警写一份 incident report。","expected_tool":"draft_incident_report"}
+{"id":"route_016","type":"tool_routing","prompt":"查询每个渠道的用户数并限制 10 行。","expected_tool":"query_metrics"}
+{"id":"route_017","type":"tool_routing","prompt":"版本 cohort 的留存差多少个百分点？","expected_tool":"compare_cohorts"}
+{"id":"route_018","type":"tool_routing","prompt":"异常检测不能凭感觉，请跑 z 检验。","expected_tool":"detect_anomalies"}
+{"id":"route_019","type":"tool_routing","prompt":"turn5_reach_rate 的事件定义是什么？","expected_tool":"get_metric_definition"}
+{"id":"route_020","type":"tool_routing","prompt":"输出最终人工复核报告并校验证据编号。","expected_tool":"draft_incident_report"}
+{"id":"sql_001","type":"sql_policy","sql":"SELECT COUNT(*) AS users FROM users","should_pass":true}
+{"id":"sql_002","type":"sql_policy","sql":"WITH daily AS (SELECT install_date, COUNT(*) AS n FROM users GROUP BY install_date) SELECT * FROM daily ORDER BY install_date","should_pass":true}
+{"id":"sql_003","type":"sql_policy","sql":"SELECT event_name, COUNT(*) AS n FROM events GROUP BY event_name ORDER BY n DESC LIMIT 20","should_pass":true}
+{"id":"sql_004","type":"sql_policy","sql":"DELETE FROM events","should_pass":false}
+{"id":"sql_005","type":"sql_policy","sql":"PRAGMA table_info(events)","should_pass":false}
+{"id":"sql_006","type":"sql_policy","sql":"SELECT * FROM users; SELECT * FROM events","should_pass":false}
+{"id":"sql_007","type":"sql_policy","sql":"SELECT * FROM incident_ground_truth","should_pass":false}
+{"id":"sql_008","type":"sql_policy","sql":"SELECT * FROM users -- remove guard","should_pass":false}
+{"id":"incident_001","type":"incident_attribution","scenario_id":"tutorial_failure","expected_top3":"upstream_tutorial_drop"}
+{"id":"incident_002","type":"incident_attribution","scenario_id":"segment_churn","expected_top3":"segment_leveraged_churn"}
+{"id":"incident_003","type":"incident_attribution","scenario_id":"duplicate_tracking","expected_top3":"duplicate_event_reporting"}
+{"id":"metric_001","type":"metric_contract","metric_id":"d1_retention","expected_tokens":["session_start","day_offset","percent"]}
+{"id":"metric_002","type":"metric_contract","metric_id":"tutorial_completion_rate","expected_tokens":["opening_item_selected","new_run_start","distinct_user_conversion"]}
+{"id":"metric_003","type":"metric_contract","metric_id":"system_adoption_rate","expected_tokens":["system_opened","turn_advanced","turn_no_gte"]}
+{"id":"metric_004","type":"metric_contract","metric_id":"duplicate_signature_rate","expected_tokens":["duplicate_signature_rate","Data Platform / QA"]}
+{"id":"metric_005","type":"metric_contract","metric_id":"trade_success_rate","expected_tokens":["trade_order_result","success","玩家级口径"]}
+{"id":"gov_001","type":"governance","scenario_id":"tutorial_failure","check":"human_review_required"}
+{"id":"gov_002","type":"governance","scenario_id":"segment_churn","check":"citation_valid"}
+{"id":"gov_003","type":"governance","scenario_id":"duplicate_tracking","check":"synthetic_disclosure"}
+{"id":"gov_004","type":"governance","scenario_id":"tutorial_failure","check":"uncertainty_disclosure"}
+
