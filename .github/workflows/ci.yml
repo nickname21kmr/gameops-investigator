@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
           cache: pip
       - name: Install project
-        run: python -m pip install -e .
+        run: python -m pip install -e . pytest
       - name: Run automated tests
         run: python -m pytest -q
       - name: Run deterministic offline evaluation
