@@ -1,5 +1,9 @@
 # GameOps Investigator
 
+> **English overview** — An evidence-first game operations incident investigation agent built around metric contracts, read-only SQL, cohort comparison, anomaly testing, and citation-checked reports. The repository uses synthetic data; **17 automated tests** and a **40-case deterministic offline evaluation** validate the tool, safety, replay, and evidence pipeline—not Claude model quality.
+>
+> [Architecture](docs/architecture.png) · [Browser demo](docs/demo.gif) · [Security boundary](docs/SECURITY.md) · [Onboarding](docs/ONBOARDING.md) · [Evaluation cases](evals/cases.jsonl)
+
 一个可运行、可审计、可评测的游戏运营异常归因 Agent。它把 Claude Code 作为规划与解释层，把指标、SQL、分群比较、异常检测和引用校验留给确定性程序。
 
 > 数据声明：仓库内是固定种子生成的 5,000 名合成玩家和 136,164 条源事件。三个事故仅注入派生数据库，不代表真实商业游戏指标。
