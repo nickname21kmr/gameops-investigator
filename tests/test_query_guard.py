@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import json
+import sys
+
+from gameops_investigator.cli import main as cli_main
 from gameops_investigator.database import QueryRejected, validate_readonly_sql
 from gameops_investigator.tools import query_metrics
 
@@ -27,6 +31,25 @@ def test_hidden_ground_truth_table_is_blocked_by_authorizer():
     assert any(token in result["error"].lower() for token in ("not authorized", "prohibited"))
 
 
-def test_timeout_and_limit_inputs_are_bounded():
+def test_timeout_and_limit_inputs_are_bounded(monkeypatch, capsys):
     assert not query_metrics("SELECT * FROM users", row_limit=501)["ok"]
     assert not query_metrics("SELECT * FROM users", timeout_ms=49)["ok"]
+
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "gameops",
+            "query",
+            "SELECT user_id FROM users ORDER BY user_id",
+            "--row-limit",
+            "7",
+            "--timeout-ms",
+            "750",
+        ],
+    )
+    cli_main()
+    result = json.loads(capsys.readouterr().out)
+    assert result["ok"]
+    assert result["row_count"] == 7
+    assert "LIMIT 7" in result["executed_sql"]

@@ -58,6 +58,14 @@ Claude Code 可调用五个工具：
 
 没有 Claude 登录也不影响演示、测试或评测：Streamlit 默认使用同工具链的 `Deterministic replay`。界面不会把这一路径冒充成 LLM。
 
+也可以从命令行执行同一套只读查询，并按演示场景收紧返回行数和超时：
+
+```powershell
+.\.venv\Scripts\python.exe -m gameops_investigator.cli query "SELECT user_id FROM users ORDER BY user_id" --row-limit 25 --timeout-ms 1000
+```
+
+`--row-limit` 允许 `1–500`，`--timeout-ms` 允许 `50–10000`；越界输入会由查询安全层拒绝。
+
 ## 结果与评测
 
 ```powershell
