@@ -1,6 +1,6 @@
 # GameOps Investigator
 
-> **English overview** — An evidence-first game operations incident investigation agent built around metric contracts, read-only SQL, cohort comparison, anomaly testing, and citation-checked reports. The repository uses synthetic data; **17 automated tests** and a **40-case deterministic offline evaluation** validate the tool, safety, replay, and evidence pipeline—not Claude model quality.
+> **English overview** — An evidence-first game operations incident investigation agent built around metric contracts, read-only SQL, cohort comparison, anomaly testing, and citation-checked reports. The repository uses synthetic data; **automated safety and integration tests** and a **40-case deterministic offline evaluation** validate the tool, safety, replay, and evidence pipeline—not Claude model quality.
 >
 > [Architecture](docs/architecture.png) · [Browser demo](docs/demo.gif) · [Security boundary](docs/SECURITY.md) · [Onboarding](docs/ONBOARDING.md) · [Evaluation cases](evals/cases.jsonl)
 
@@ -65,6 +65,8 @@ Claude Code 可调用五个工具：
 ```
 
 `--row-limit` 允许 `1–500`，`--timeout-ms` 允许 `50–10000`；越界输入会由查询安全层拒绝。
+
+CLI 将工具结果（包括 `ok: false` 的错误）以 JSON 写入标准输出。成功时退出码为 `0`，工具返回失败时为 `1`，命令行参数格式错误时为 `2`（用法提示写入标准错误）。PowerShell 脚本可检查 `$LASTEXITCODE`，避免把被拒绝的查询当作成功执行。
 
 ## 结果与评测
 

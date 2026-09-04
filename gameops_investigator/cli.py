@@ -7,7 +7,7 @@ from .orchestrator import ClaudeCodeRunner, DeterministicInvestigator
 from .tools import query_metrics
 
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser(description="GameOps Investigator CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
     investigate = subparsers.add_parser("investigate", help="Run a reproducible incident investigation")
@@ -27,7 +27,8 @@ def main() -> None:
     else:
         result = ClaudeCodeRunner().run(args.question)
     print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 1 if result.get("ok") is False else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
