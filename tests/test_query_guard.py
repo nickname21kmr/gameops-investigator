@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import sys
 
+import pytest
+
 from gameops_investigator.cli import main as cli_main
 from gameops_investigator.database import QueryRejected, validate_readonly_sql
 from gameops_investigator.tools import query_metrics
@@ -23,6 +25,46 @@ def test_mutations_and_multiple_statements_are_rejected():
             pass
         else:
             raise AssertionError(sql)
+
+
+@pytest.mark.parametrize(
+    "sql",
+    [
+        "SELECT 'It''s safe; drop -- text' AS note",
+        'SELECT "delete" FROM (SELECT 1 AS "delete")',
+        "SELECT `update` FROM (SELECT 1 AS `update`)",
+        "SELECT [pragma] FROM (SELECT 1 AS [pragma])",
+    ],
+)
+def test_quoted_text_and_identifiers_are_not_treated_as_sql(sql):
+    result = query_metrics(sql)
+    assert result["ok"]
+    assert result["row_count"] == 1
+
+
+@pytest.mark.parametrize(
+    ("sql", "expected_fragment"),
+    [
+        ("SELECT user_id FROM users LIMIT 999", "LIMIT 3"),
+        ("SELECT user_id FROM users LIMIT 999 OFFSET 10", "LIMIT 3 OFFSET 10"),
+        ("SELECT user_id FROM users LIMIT 10, 999", "LIMIT 10, 3"),
+    ],
+)
+def test_all_supported_limit_forms_are_clamped(sql, expected_fragment):
+    guarded = validate_readonly_sql(sql, row_limit=3)
+    assert expected_fragment in guarded
+    assert query_metrics(sql, row_limit=3)["row_count"] == 3
+
+
+def test_limit_text_inside_a_literal_is_preserved():
+    guarded = validate_readonly_sql("SELECT 'limit 999' AS note", row_limit=3)
+    assert "'limit 999'" in guarded
+    assert guarded.endswith("LIMIT 3")
+
+
+def test_unterminated_quotes_are_rejected():
+    with pytest.raises(QueryRejected, match="unterminated"):
+        validate_readonly_sql("SELECT 'unfinished")
 
 
 def test_hidden_ground_truth_table_is_blocked_by_authorizer():

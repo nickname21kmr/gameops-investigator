@@ -22,7 +22,7 @@ FORBIDDEN_SQL = re.compile(
     re.IGNORECASE,
 )
 COMMENT_PATTERN = re.compile(r"--|/\*|\*/")
-LIMIT_PATTERN = re.compile(r"\blimit\s+(\d+)\b", re.IGNORECASE)
+LIMIT_PATTERN = re.compile(r"\blimit\s+(?:(?P<offset>\d+)\s*,\s*)?(?P<count>\d+)\b", re.IGNORECASE)
 
 
 class QueryRejected(ValueError):
@@ -47,6 +47,36 @@ class QueryResult:
             "elapsed_ms": round(self.elapsed_ms, 3),
             "executed_sql": self.executed_sql,
         }
+
+
+def _mask_quoted_segments(statement: str) -> str:
+    """Blank SQL strings and quoted identifiers while preserving character offsets."""
+    masked = list(statement)
+    closing_delimiters = {"'": "'", '"': '"', "`": "`", "[": "]"}
+    index = 0
+    while index < len(statement):
+        opener = statement[index]
+        closing = closing_delimiters.get(opener)
+        if closing is None:
+            index += 1
+            continue
+
+        masked[index] = " "
+        index += 1
+        while index < len(statement):
+            masked[index] = " "
+            if statement[index] == closing:
+                if opener != "[" and index + 1 < len(statement) and statement[index + 1] == closing:
+                    masked[index + 1] = " "
+                    index += 2
+                    continue
+                index += 1
+                break
+            index += 1
+        else:
+            raise QueryRejected("SQL contains an unterminated quoted value or identifier.")
+
+    return "".join(masked)
 
 
 def _readonly_authorizer(action: int, arg1: str | None, _arg2: str | None, _db: str | None, _source: str | None) -> int:
@@ -87,22 +117,24 @@ def validate_readonly_sql(sql: str, row_limit: int = 200) -> str:
     if not isinstance(sql, str) or not sql.strip():
         raise QueryRejected("SQL must be a non-empty string.")
     statement = sql.strip()
-    if ";" in statement:
+    executable_sql = _mask_quoted_segments(statement)
+    if ";" in executable_sql:
         raise QueryRejected("Multiple statements and semicolons are not allowed.")
-    if COMMENT_PATTERN.search(statement):
+    if COMMENT_PATTERN.search(executable_sql):
         raise QueryRejected("SQL comments are not allowed.")
-    if FORBIDDEN_SQL.search(statement):
+    if FORBIDDEN_SQL.search(executable_sql):
         raise QueryRejected("Only read-only SELECT/CTE queries are allowed.")
-    if not re.match(r"^(select|with)\b", statement, re.IGNORECASE):
+    if not re.match(r"^(select|with)\b", executable_sql, re.IGNORECASE):
         raise QueryRejected("Query must begin with SELECT or WITH.")
     if row_limit < 1 or row_limit > 500:
         raise QueryRejected("row_limit must be between 1 and 500.")
 
-    match = LIMIT_PATTERN.search(statement)
+    match = LIMIT_PATTERN.search(executable_sql)
     if match:
-        requested = int(match.group(1))
+        requested = int(match.group("count"))
         if requested > row_limit:
-            statement = LIMIT_PATTERN.sub(f"LIMIT {row_limit}", statement, count=1)
+            start, end = match.span("count")
+            statement = f"{statement[:start]}{row_limit}{statement[end:]}"
     else:
         statement = f"{statement}\nLIMIT {row_limit}"
     return statement
@@ -154,4 +186,3 @@ def execute_readonly(
     rows = [{column: row[column] for column in columns} for row in visible]
     elapsed_ms = (time.perf_counter() - started) * 1000
     return QueryResult(columns, rows, len(rows), truncated, elapsed_ms, guarded_sql)
-
