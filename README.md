@@ -64,7 +64,7 @@ Claude Code 可调用五个工具：
 .\.venv\Scripts\python.exe -m gameops_investigator.cli query "SELECT user_id FROM users ORDER BY user_id" --row-limit 25 --timeout-ms 1000
 ```
 
-`--row-limit` 允许 `1–500`，`--timeout-ms` 允许 `50–10000`；越界输入会由查询安全层拒绝。
+`--row-limit` 允许 `1–500`，`--timeout-ms` 允许 `50–10000`；越界输入会由查询安全层拒绝。结果中的 `truncated` 会准确标记是否因安全行数上限而省略了更多记录。
 
 CLI 将工具结果（包括 `ok: false` 的错误）以 JSON 写入标准输出。成功时退出码为 `0`，工具返回失败时为 `1`，命令行参数格式错误时为 `2`（用法提示写入标准错误）。PowerShell 脚本可检查 `$LASTEXITCODE`，避免把被拒绝的查询当作成功执行。
 

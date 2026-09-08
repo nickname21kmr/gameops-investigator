@@ -6,7 +6,7 @@
 - Semicolons, SQL comments, mutations, DDL, `PRAGMA`, attach/detach, and extension loading in executable SQL are rejected. Quoted text and identifiers are excluded from keyword scanning.
 - SQLite is opened with `mode=ro` and `PRAGMA query_only=ON`.
 - A SQLite authorizer restricts reads to `users`, `events`, `dataset_manifest`, and `incident_catalog`.
-- The maximum row limit is 500; the default is 200. Both SQLite `LIMIT count OFFSET offset` and `LIMIT offset, count` forms are capped.
+- The maximum returned row count is 500; the default is 200. Both SQLite `LIMIT count OFFSET offset` and `LIMIT offset, count` forms are capped. When the safety limit applies, the executor may read one additional row only to report `truncated` accurately; that probe row is never returned.
 - The maximum timeout is 10 seconds; the default is 2 seconds.
 - A progress handler interrupts queries that exceed the deadline.
 

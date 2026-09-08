@@ -14,7 +14,16 @@ def test_readonly_query_executes_and_is_limited():
     result = query_metrics("SELECT user_id FROM users ORDER BY user_id", row_limit=17)
     assert result["ok"]
     assert result["row_count"] == 17
-    assert "LIMIT 17" in result["executed_sql"]
+    assert result["truncated"] is True
+    assert "LIMIT 18" in result["executed_sql"]
+
+
+def test_explicit_limit_within_bound_is_not_reported_as_safety_truncation():
+    result = query_metrics("SELECT user_id FROM users ORDER BY user_id LIMIT 5", row_limit=17)
+    assert result["ok"]
+    assert result["row_count"] == 5
+    assert result["truncated"] is False
+    assert result["executed_sql"].endswith("LIMIT 5")
 
 
 def test_mutations_and_multiple_statements_are_rejected():
@@ -53,7 +62,9 @@ def test_quoted_text_and_identifiers_are_not_treated_as_sql(sql):
 def test_all_supported_limit_forms_are_clamped(sql, expected_fragment):
     guarded = validate_readonly_sql(sql, row_limit=3)
     assert expected_fragment in guarded
-    assert query_metrics(sql, row_limit=3)["row_count"] == 3
+    result = query_metrics(sql, row_limit=3)
+    assert result["row_count"] == 3
+    assert result["truncated"] is True
 
 
 def test_limit_text_inside_a_literal_is_preserved():
@@ -94,4 +105,5 @@ def test_timeout_and_limit_inputs_are_bounded(monkeypatch, capsys):
     result = json.loads(capsys.readouterr().out)
     assert result["ok"]
     assert result["row_count"] == 7
-    assert "LIMIT 7" in result["executed_sql"]
+    assert result["truncated"] is True
+    assert "LIMIT 8" in result["executed_sql"]

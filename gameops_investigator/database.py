@@ -113,7 +113,12 @@ def _readonly_authorizer(action: int, arg1: str | None, _arg2: str | None, _db: 
     return sqlite3.SQLITE_OK
 
 
-def validate_readonly_sql(sql: str, row_limit: int = 200) -> str:
+def validate_readonly_sql(
+    sql: str,
+    row_limit: int = 200,
+    *,
+    probe_extra_row: bool = False,
+) -> str:
     if not isinstance(sql, str) or not sql.strip():
         raise QueryRejected("SQL must be a non-empty string.")
     statement = sql.strip()
@@ -129,14 +134,15 @@ def validate_readonly_sql(sql: str, row_limit: int = 200) -> str:
     if row_limit < 1 or row_limit > 500:
         raise QueryRejected("row_limit must be between 1 and 500.")
 
+    enforced_limit = row_limit + 1 if probe_extra_row else row_limit
     match = LIMIT_PATTERN.search(executable_sql)
     if match:
         requested = int(match.group("count"))
         if requested > row_limit:
             start, end = match.span("count")
-            statement = f"{statement[:start]}{row_limit}{statement[end:]}"
+            statement = f"{statement[:start]}{enforced_limit}{statement[end:]}"
     else:
-        statement = f"{statement}\nLIMIT {row_limit}"
+        statement = f"{statement}\nLIMIT {enforced_limit}"
     return statement
 
 
@@ -162,7 +168,7 @@ def execute_readonly(
 ) -> QueryResult:
     if timeout_ms < 50 or timeout_ms > 10_000:
         raise QueryRejected("timeout_ms must be between 50 and 10000.")
-    guarded_sql = validate_readonly_sql(sql, row_limit=row_limit)
+    guarded_sql = validate_readonly_sql(sql, row_limit=row_limit, probe_extra_row=True)
     started = time.perf_counter()
     deadline = started + timeout_ms / 1000
 
