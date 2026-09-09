@@ -1,18 +1,20 @@
 # GameOps Investigator
 
-> **English overview** — An evidence-first game operations incident investigation agent built around metric contracts, read-only SQL, cohort comparison, anomaly testing, and citation-checked reports. The repository uses synthetic data; **automated safety and integration tests** and a **40-case deterministic offline evaluation** validate the tool, safety, replay, and evidence pipeline—not Claude model quality.
+> **English overview** — Investigate tutorial drop-off, cohort churn, and duplicate tracking events with read-only SQL and statistical comparisons. Generate reports with ranked cause candidates, supporting queries, and findings for analyst review. Built with synthetic game data; supports Claude Code through MCP and a deterministic replay mode for offline use.
 >
-> [Architecture](docs/architecture.png) · [Browser demo](docs/demo.gif) · [Security boundary](docs/SECURITY.md) · [Onboarding](docs/ONBOARDING.md) · [Evaluation cases](evals/cases.jsonl)
+> [Architecture](docs/architecture.png) · [Demo GIF](docs/demo.gif) · [Security boundary](docs/SECURITY.md) · [Onboarding](docs/ONBOARDING.md) · [Evaluation cases](evals/cases.jsonl)
 
-一个可运行、可审计、可评测的游戏运营异常归因 Agent。它把 Claude Code 作为规划与解释层，把指标、SQL、分群比较、异常检测和引用校验留给确定性程序。
+用于排查教程掉点、分群流失和重复埋点的游戏数据调查工具。它通过只读 SQL、分群对比和统计检验整理候选原因，生成附有查询证据、限制说明和待复核结论的报告。
+
+Claude Code 负责规划排查步骤与解释结果；指标计算、SQL 执行、分群比较、异常检测和引用校验由确定性程序完成。
 
 > 数据声明：仓库内是固定种子生成的 5,000 名合成玩家和 136,164 条源事件。三个事故仅注入派生数据库，不代表真实商业游戏指标。
 
 ![Architecture](docs/architecture.png)
 
-![Browser-verified demo](docs/demo.gif)
+![Investigation workbench demo](docs/demo.gif)
 
-## 你能现场演示什么
+## 调查流程与示例
 
 `指标告警 -> Claude/回放协调器制定排查计划 -> MCP 工具调用 -> SQL 与分群下钻 -> 原因 Top-3 + 证据 -> 人工复核报告`
 
@@ -22,7 +24,9 @@
 2. `leveraged` 玩家分群流失，整体检验未越过阈值但分群显著。
 3. `system_opened` 重复上报，事件级强度虚高而玩家级采用率基本稳定。
 
-工作台包含调查结论、完整工具轨迹、只读 SQL 沙盒、维度下钻图、40 条固定评测以及安全/泛化说明。
+工作台提供调查结论、完整工具调用记录、只读 SQL 沙盒和维度下钻图，也可查看 40 条固定评测及安全边界说明。
+
+查看一份已生成的[教程掉点调查报告](reports/tutorial_failure.md)：报告列出告警变化、三个候选原因及其依据，并保留 SQL、证据 ID 和后续检查建议。对应的[工具调用记录](reports/tutorial_failure.trace.json)可用于核对调查过程。
 
 ## 一键运行（Windows）
 
@@ -31,7 +35,7 @@
 .\run.ps1
 ```
 
-浏览器打开 [http://localhost:8501](http://localhost:8501)。`setup.ps1` 使用本机 `F:\anaconda\python.exe`（找不到时回退到 `python`）创建项目级 `.venv`，安装依赖、重建事故数据、生成三份报告、运行测试和 40 条评测。
+浏览器打开 [http://localhost:8501](http://localhost:8501)。`setup.ps1` 会创建项目级 `.venv`，安装依赖、重建事故数据、生成三份报告、运行测试和 40 条评测。
 
 如果环境已配置，只启动界面：
 
@@ -56,7 +60,7 @@ Claude Code 可调用五个工具：
 - `detect_anomalies`：两比例 z 检验或对数率比检验。
 - `draft_incident_report`：带 SQL、证据 ID、置信度、限制和人工复核状态的报告。
 
-没有 Claude 登录也不影响演示、测试或评测：Streamlit 默认使用同工具链的 `Deterministic replay`。界面不会把这一路径冒充成 LLM。
+Streamlit 默认使用 `Deterministic replay`，按固定流程调用同一套工具，无需 Claude 登录即可运行演示、测试和离线评测。Claude 模式需要完成登录。
 
 也可以从命令行执行同一套只读查询，并按演示场景收紧返回行数和超时：
 
@@ -88,9 +92,9 @@ CLI 将工具结果（包括 `ok: false` 的错误）以 JSON 写入标准输出
 - 本地 p50 / p95 延迟；
 - Claude Code 运行状态与成本边界。
 
-Claude 的工具选择、归因、单次成本和延迟只有在完成已认证运行后才填写；Pro 订阅不被换算或冒充 API 成本。
+Claude 模式的工具选择、归因、成本和延迟需通过已认证运行单独测量。
 
-## 泛用化设计
+## 接入其他游戏
 
 核心代码不依赖 Newton 的玩法文案。接入另一款游戏需要：
 
@@ -99,7 +103,7 @@ Claude 的工具选择、归因、单次成本和延迟只有在完成已认证�
 3. 在 `config/scenarios.json` 添加告警窗口和下钻维度；
 4. 为新指标补固定评测。
 
-查询防线、MCP 接口、统计检测、证据 ledger、报告引用校验和评测框架不需改写。详见 [接入指南](docs/ONBOARDING.md) 与 [安全边界](docs/SECURITY.md)。
+现有查询校验、MCP 接口、统计检测、证据记录、报告引用校验和评测框架可继续使用。详见 [接入指南](docs/ONBOARDING.md) 与 [安全边界](docs/SECURITY.md)。
 
 ## 项目结构
 
@@ -116,17 +120,9 @@ docs/                      架构、安全、接入与演示脚本
 tests/                     单元与集成测试
 ```
 
-## 简历口径
-
-可确认的表述：
-
-> 基于 5,000 名合成玩家、136,164 条事件构建游戏运营异常归因 Agent，将指标查询、版本/用户分群对比、异常检测和报告生成封装为只读 MCP 工具，支持带证据的异常归因与 Text2SQL。
-
-准确率、延迟和 Claude 成本请从本次实际 `artifacts/eval_results.json` 与已认证运行记录填写，不要手写数字。
-
 ## 项目归属与许可
 
-这是一个 AI-assisted 个人作品：需求定义、指标口径、MCP 工具设计、异常案例、评测体系和结果复核均属于项目交付范围。请勿将确定性离线评测描述成 Claude 模型实测，也不要将合成数据描述成商业游戏数据。
+这是一个在 AI 辅助下开发的个人项目（AI-assisted），用于探索游戏数据调查流程、MCP 工具接入和报告生成。
 
 - 软件代码采用 [MIT License](LICENSE)。
 - `data/source/` 中的合成数据采用 [CC BY 4.0](DATA_LICENSE.md)。
