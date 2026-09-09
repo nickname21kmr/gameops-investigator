@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 import sys
 
 import pytest
 
 from gameops_investigator.cli import main as cli_main
+from gameops_investigator import database
 from gameops_investigator.database import QueryRejected, validate_readonly_sql
 from gameops_investigator.tools import query_metrics
 
@@ -15,7 +17,7 @@ def test_readonly_query_executes_and_is_limited():
     assert result["ok"]
     assert result["row_count"] == 17
     assert result["truncated"] is True
-    assert "LIMIT 18" in result["executed_sql"]
+    assert result["executed_sql"] == "SELECT user_id FROM users ORDER BY user_id"
 
 
 def test_explicit_limit_within_bound_is_not_reported_as_safety_truncation():
@@ -52,25 +54,25 @@ def test_quoted_text_and_identifiers_are_not_treated_as_sql(sql):
 
 
 @pytest.mark.parametrize(
-    ("sql", "expected_fragment"),
+    "sql",
     [
-        ("SELECT user_id FROM users LIMIT 999", "LIMIT 3"),
-        ("SELECT user_id FROM users LIMIT 999 OFFSET 10", "LIMIT 3 OFFSET 10"),
-        ("SELECT user_id FROM users LIMIT 10, 999", "LIMIT 10, 3"),
+        "SELECT user_id FROM users LIMIT 999",
+        "SELECT user_id FROM users LIMIT 999 OFFSET 10",
+        "SELECT user_id FROM users LIMIT 10, 999",
     ],
 )
-def test_all_supported_limit_forms_are_clamped(sql, expected_fragment):
-    guarded = validate_readonly_sql(sql, row_limit=3)
-    assert expected_fragment in guarded
+def test_limit_forms_preserve_sql_and_bound_returned_rows(sql):
+    assert validate_readonly_sql(sql, row_limit=3) == sql
     result = query_metrics(sql, row_limit=3)
+    assert result["ok"]
+    assert result["executed_sql"] == sql
     assert result["row_count"] == 3
     assert result["truncated"] is True
 
 
 def test_limit_text_inside_a_literal_is_preserved():
-    guarded = validate_readonly_sql("SELECT 'limit 999' AS note", row_limit=3)
-    assert "'limit 999'" in guarded
-    assert guarded.endswith("LIMIT 3")
+    sql = "SELECT 'limit 999' AS note"
+    assert validate_readonly_sql(sql, row_limit=3) == sql
 
 
 def test_unterminated_quotes_are_rejected():
@@ -106,4 +108,15 @@ def test_timeout_and_limit_inputs_are_bounded(monkeypatch, capsys):
     assert result["ok"]
     assert result["row_count"] == 7
     assert result["truncated"] is True
-    assert "LIMIT 8" in result["executed_sql"]
+    assert result["executed_sql"] == "SELECT user_id FROM users ORDER BY user_id"
+
+
+@pytest.mark.parametrize("sql", ["SELECT 1 AS value", "SELECT 1 UNION ALL SELECT 2", "SELECT missing_column"])
+def test_query_connection_is_closed_after_success_truncation_or_error(monkeypatch, sql):
+    connection = sqlite3.connect(":memory:")
+    connection.row_factory = sqlite3.Row
+    monkeypatch.setattr(database, "connect_readonly", lambda path: connection)
+    result = query_metrics(sql, row_limit=1)
+    assert result["ok"] is ("missing_column" not in sql)
+    with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+        connection.execute("SELECT 1")

@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import sqlite3
 import time
+from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
@@ -22,7 +23,6 @@ FORBIDDEN_SQL = re.compile(
     re.IGNORECASE,
 )
 COMMENT_PATTERN = re.compile(r"--|/\*|\*/")
-LIMIT_PATTERN = re.compile(r"\blimit\s+(?:(?P<offset>\d+)\s*,\s*)?(?P<count>\d+)\b", re.IGNORECASE)
 
 
 class QueryRejected(ValueError):
@@ -113,12 +113,8 @@ def _readonly_authorizer(action: int, arg1: str | None, _arg2: str | None, _db: 
     return sqlite3.SQLITE_OK
 
 
-def validate_readonly_sql(
-    sql: str,
-    row_limit: int = 200,
-    *,
-    probe_extra_row: bool = False,
-) -> str:
+def validate_readonly_sql(sql: str, row_limit: int = 200) -> str:
+    """Validate without rewriting SQL; execute_readonly bounds returned rows."""
     if not isinstance(sql, str) or not sql.strip():
         raise QueryRejected("SQL must be a non-empty string.")
     statement = sql.strip()
@@ -134,15 +130,6 @@ def validate_readonly_sql(
     if row_limit < 1 or row_limit > 500:
         raise QueryRejected("row_limit must be between 1 and 500.")
 
-    enforced_limit = row_limit + 1 if probe_extra_row else row_limit
-    match = LIMIT_PATTERN.search(executable_sql)
-    if match:
-        requested = int(match.group("count"))
-        if requested > row_limit:
-            start, end = match.span("count")
-            statement = f"{statement[:start]}{enforced_limit}{statement[end:]}"
-    else:
-        statement = f"{statement}\nLIMIT {enforced_limit}"
     return statement
 
 
@@ -168,25 +155,27 @@ def execute_readonly(
 ) -> QueryResult:
     if timeout_ms < 50 or timeout_ms > 10_000:
         raise QueryRejected("timeout_ms must be between 50 and 10000.")
-    guarded_sql = validate_readonly_sql(sql, row_limit=row_limit, probe_extra_row=True)
+    guarded_sql = validate_readonly_sql(sql, row_limit=row_limit)
     started = time.perf_counter()
     deadline = started + timeout_ms / 1000
 
-    with connect_readonly(path) as connection:
+    with closing(connect_readonly(path)) as connection:
         def progress() -> int:
             return 1 if time.perf_counter() > deadline else 0
 
         connection.set_progress_handler(progress, 1000)
         try:
-            cursor = connection.execute(guarded_sql, tuple(parameters or ()))
-            fetched = cursor.fetchmany(row_limit + 1)
+            with closing(connection.cursor()) as cursor:
+                cursor.execute(guarded_sql, tuple(parameters or ()))
+                # Bound the output, not inner LIMITs that define the analysis cohort.
+                fetched = cursor.fetchmany(row_limit + 1)
+                columns = [item[0] for item in (cursor.description or [])]
         except sqlite3.DatabaseError as exc:
             message = "Query timed out." if "interrupted" in str(exc).lower() else f"Query rejected by SQLite policy: {exc}"
             raise QueryRejected(message) from exc
         finally:
             connection.set_progress_handler(None, 0)
 
-    columns = [item[0] for item in (cursor.description or [])]
     truncated = len(fetched) > row_limit
     visible = fetched[:row_limit]
     rows = [{column: row[column] for column in columns} for row in visible]
