@@ -35,6 +35,14 @@ This uses the bounded cursor-fetch approach found in [Datasette's query executor
 - Evidence IDs are SHA-256 digests of tool outputs; the report validator rejects unknown references.
 - Synthetic-data disclosure and causal uncertainty are tested behaviors.
 
+## Evaluation exports
+
+`evals/run_evals.py` builds an allowlisted summary for `claude_code` before returning, printing, or saving the evaluation report. It retains boolean installation/login status and whether the authentication check reported an error. Executable paths, authentication diagnostics, provider details, and unknown runtime fields are omitted. Runtime discovery itself is unchanged.
+
+The optional `--claude` run exports only a typed outcome, finite non-negative elapsed time, an integer exit code when available, and `output_omitted: true`. Raw model payloads and subprocess errors are not included. This outcome is not a scored model evaluation: the deterministic metrics and `claude_agent_metrics: null` remain separate. The default run does not invoke the model, although it checks local CLI availability and authentication status.
+
+SQL-policy cases record `error: null` on success or `query_rejected_or_unavailable` on failure, rather than copying tool error text into the artifact. Re-run the corresponding tool locally for detailed diagnostics. These export rules apply to runtime diagnostics, not arbitrary custom case definitions or other project reports; review those separately before publishing.
+
 ## Production hardening checklist
 
 Before a real deployment, add identity-aware warehouse credentials, row/column-level access, query cost estimation, central audit logs, PII masking, rate limits, result-cache policy, incident-owner routing, and an approval workflow separate from the LLM.

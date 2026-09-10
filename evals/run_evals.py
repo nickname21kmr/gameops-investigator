@@ -51,6 +51,34 @@ def percentile(values: list[float], pct: float) -> float | None:
     return ordered[lower] + (ordered[upper] - ordered[lower]) * (position - lower)
 
 
+def summarize_claude_status(
+    status: dict[str, Any], evaluation: dict[str, Any] | None = None
+) -> dict[str, Any]:
+    """Export an allowlisted summary, not local diagnostics or model output."""
+    summary: dict[str, Any] = {
+        "installed": status.get("installed") if type(status.get("installed")) is bool else None,
+        "logged_in": status.get("logged_in") if type(status.get("logged_in")) is bool else None,
+        "auth_check_failed": "auth_error" in status,
+        "evaluation": "not_run; use --claude after interactive sign-in",
+    }
+    if evaluation is not None:
+        elapsed_ms = evaluation.get("elapsed_ms")
+        valid_elapsed = (
+            type(elapsed_ms) is int and elapsed_ms >= 0
+        ) or (
+            type(elapsed_ms) is float and math.isfinite(elapsed_ms) and elapsed_ms >= 0
+        )
+        returncode = evaluation.get("returncode")
+        summary["evaluation"] = {
+            "ok": evaluation.get("ok") if type(evaluation.get("ok")) is bool else None,
+            "mode": "claude_code",
+            "elapsed_ms": elapsed_ms if valid_elapsed else None,
+            "returncode": returncode if type(returncode) is int else None,
+            "output_omitted": True,
+        }
+    return summary
+
+
 def run(include_claude: bool = False) -> dict[str, Any]:
     cases = load_cases()
     details = []
@@ -67,7 +95,11 @@ def run(include_claude: bool = False) -> dict[str, Any]:
             result = query_metrics(case["sql"], row_limit=50, timeout_ms=2000)
             actual_pass = bool(result["ok"])
             passed = actual_pass == case["should_pass"]
-            detail = {"actual_pass": actual_pass, "expected_pass": case["should_pass"], "error": result.get("error")}
+            detail = {
+                "actual_pass": actual_pass,
+                "expected_pass": case["should_pass"],
+                "error": None if actual_pass else "query_rejected_or_unavailable",
+            }
         elif case_type == "incident_attribution":
             result = scenario_cache.setdefault(case["scenario_id"], DeterministicInvestigator().investigate(case["scenario_id"]))
             candidate_ids = [item["id"] for item in result["candidates"][:3]]
@@ -104,13 +136,12 @@ def run(include_claude: bool = False) -> dict[str, Any]:
     incident_results = [item for item in details if item["type"] == "incident_attribution"]
     safe_sql_results = [item for item in details if item["type"] == "sql_policy" and item["expected_pass"]]
     citation_values = [result["report"]["citation_check"]["valid"] for result in scenario_cache.values()]
-    claude_status: dict[str, Any] = ClaudeCodeRunner.availability()
+    claude_status = ClaudeCodeRunner.availability()
+    claude_evaluation = None
     if include_claude:
-        claude_status["evaluation"] = ClaudeCodeRunner().run(
+        claude_evaluation = ClaudeCodeRunner().run(
             "Investigate the tutorial_failure incident from the configured demo windows and return a cited report."
         )
-    else:
-        claude_status["evaluation"] = "not_run; use --claude after interactive sign-in"
 
     result = {
         "suite": "gameops-investigator-fixed-evals-v1",
@@ -133,7 +164,7 @@ def run(include_claude: bool = False) -> dict[str, Any]:
             "claude_single_analysis_cost_usd": None,
             "claude_cost_note": "Not measured until Claude Code completes an authenticated run; no number is inferred from a Pro subscription.",
         },
-        "claude_code": claude_status,
+        "claude_code": summarize_claude_status(claude_status, claude_evaluation),
         "claude_agent_metrics": None,
         "scenario_count": len(scenario_catalog()),
         "details": details,
