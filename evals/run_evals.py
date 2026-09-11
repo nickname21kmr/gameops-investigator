@@ -83,6 +83,13 @@ def run(include_claude: bool = False) -> dict[str, Any]:
     cases = load_cases()
     details = []
     scenario_cache: dict[str, dict[str, Any]] = {}
+
+    def investigate_once(scenario_id: str) -> dict[str, Any]:
+        # setdefault eagerly evaluates its default, even when the key exists.
+        if scenario_id not in scenario_cache:
+            scenario_cache[scenario_id] = DeterministicInvestigator().investigate(scenario_id)
+        return scenario_cache[scenario_id]
+
     latencies = []
     for case in cases:
         started = time.perf_counter()
@@ -101,7 +108,7 @@ def run(include_claude: bool = False) -> dict[str, Any]:
                 "error": None if actual_pass else "query_rejected_or_unavailable",
             }
         elif case_type == "incident_attribution":
-            result = scenario_cache.setdefault(case["scenario_id"], DeterministicInvestigator().investigate(case["scenario_id"]))
+            result = investigate_once(case["scenario_id"])
             candidate_ids = [item["id"] for item in result["candidates"][:3]]
             passed = case["expected_top3"] in candidate_ids
             detail = {"candidate_ids": candidate_ids, "expected_top3": case["expected_top3"]}
@@ -112,7 +119,7 @@ def run(include_claude: bool = False) -> dict[str, Any]:
             passed = not missing
             detail = {"missing_tokens": missing}
         elif case_type == "governance":
-            result = scenario_cache.setdefault(case["scenario_id"], DeterministicInvestigator().investigate(case["scenario_id"]))
+            result = investigate_once(case["scenario_id"])
             markdown = result["report"]["markdown"]
             checks = {
                 "human_review_required": result["report"]["review_status"] == "human_review_required",
