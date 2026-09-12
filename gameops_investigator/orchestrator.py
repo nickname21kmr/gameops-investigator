@@ -379,17 +379,32 @@ class ClaudeCodeRunner:
             "Bash,Write,Edit,WebFetch,WebSearch",
         ]
         started = time.perf_counter()
-        completed = subprocess.run(
-            command,
-            cwd=PROJECT_ROOT,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=timeout_seconds,
-            check=False,
-            env=os.environ.copy(),
-        )
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=PROJECT_ROOT,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=timeout_seconds,
+                check=False,
+                env=os.environ.copy(),
+            )
+        except (subprocess.TimeoutExpired, OSError) as exc:
+            timed_out = isinstance(exc, subprocess.TimeoutExpired)
+            # Exception text may contain the full prompt, paths, or partial output.
+            return {
+                "ok": False,
+                "mode": "claude_code",
+                "error_code": "timeout" if timed_out else "launch_failed",
+                "error": (
+                    "Claude Code exceeded the time limit. Try a smaller investigation question."
+                    if timed_out else
+                    "Claude Code could not start. Check the local installation and executable permissions."
+                ),
+                "elapsed_ms": round((time.perf_counter() - started) * 1000, 3),
+            }
         elapsed_ms = (time.perf_counter() - started) * 1000
         if completed.returncode != 0:
             return {

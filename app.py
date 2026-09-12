@@ -105,7 +105,7 @@ if mode == "Claude Code + MCP":
             st.json(claude_result["payload"], expanded=True)
         else:
             st.error(claude_result["error"])
-            st.info("完成一次交互式 `claude` 登录后即可使用；下方仍展示同工具链的确定性回放。")
+            st.info("请按上方错误提示排查后手动重试；下方仍展示同工具链的确定性回放，并非本次 Claude 调查结果。")
 
 result = run_replay(scenario_id)
 overall = result["overall_comparison"]["rows"][0]

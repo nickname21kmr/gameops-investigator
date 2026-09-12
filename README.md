@@ -52,6 +52,8 @@ Claude Code 负责规划排查步骤与解释结果；指标计算、SQL 执行�
 .\.venv\Scripts\python.exe -m gameops_investigator.cli claude "Investigate the tutorial failure alert."
 ```
 
+Claude 调查超时或本地程序无法启动时，返回 `ok: false` 和 `error_code`（`timeout` / `launch_failed`），CLI 退出码为 `1`。错误提示不包含异常中的原始问题、路径或部分输出，也不会自动重试。超时可缩小调查问题后手动重试；启动失败则检查本地安装和执行权限。工作台下方的确定性回放不代表本次 AI 调查成功。这些异常分支通过模拟进程测试验证，不代表已完成真实模型质量评测。
+
 Claude Code 可调用五个工具：
 
 - `get_metric_definition`：指标口径、埋点、负责人和质量注意事项。
