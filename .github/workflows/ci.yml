@@ -26,3 +26,8 @@ jobs:
         run: python -m pytest -q
       - name: Run deterministic offline evaluation
         run: python evals/run_evals.py
+      - name: Audit recorded investigation trajectories
+        run: |
+          python -m gameops_investigator.cli audit-trace reports/tutorial_failure.trace.json
+          python -m gameops_investigator.cli audit-trace reports/segment_churn.trace.json
+          python -m gameops_investigator.cli audit-trace reports/duplicate_tracking.trace.json

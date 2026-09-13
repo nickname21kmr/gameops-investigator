@@ -98,6 +98,16 @@ CLI 将工具结果（包括 `ok: false` 的错误）以 JSON 写入标准输出
 
 评测 JSON 中的运行状态只保留必要摘要，不写入本机程序路径、认证诊断或原始模型输出。可选的 `--claude` 运行也只记录成功与否、耗时和退出码，不产生模型评分；SQL 错误使用固定类别。排查具体错误时，请在本机运行对应工具。详见 [评测导出边界](docs/SECURITY.md#evaluation-exports)。
 
+## Agent 调用轨迹检查
+
+除了检查报告，还可以离线检查一次调查的工具调用顺序、成功状态与调用次数：
+
+```powershell
+.\.venv\Scripts\python.exe -m gameops_investigator.cli audit-trace reports/tutorial_failure.trace.json
+```
+
+检查器会标出未先读取指标定义、缺少查询或检测步骤就生成报告、未知工具、调用失败和预算超限。它不执行轨迹里的任何内容，也不需要模型 API。现有样例来自确定性回放；通过检查不代表模型回答正确或证据真实。输入格式、规则与参考项目见 [Agent 轨迹审计说明](docs/AGENT_TRACE_AUDIT.md)。
+
 ## 接入其他游戏
 
 核心代码不依赖 Newton 的玩法文案。接入另一款游戏需要：

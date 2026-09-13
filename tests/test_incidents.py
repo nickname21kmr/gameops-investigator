@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from gameops_investigator.orchestrator import DeterministicInvestigator
+from gameops_investigator.trace_audit import audit_trace
 
 
 EXPECTED = {
@@ -17,6 +18,7 @@ def test_reproducible_incidents_hit_top_candidate_and_cite_evidence():
         assert result["report"]["citation_check"]["valid"]
         assert result["report"]["review_status"] == "human_review_required"
         assert all(call["ok"] for call in result["trace"])
+        assert audit_trace(result)["ok"]
 
 
 def test_segment_case_is_hidden_in_aggregate_but_visible_in_breakdown():
@@ -35,4 +37,3 @@ def test_report_expresses_uncertainty_and_synthetic_boundary():
     markdown = DeterministicInvestigator().investigate("tutorial_failure")["report"]["markdown"]
     assert "synthetic" in markdown.lower()
     assert "causal proof" in markdown.lower()
-
