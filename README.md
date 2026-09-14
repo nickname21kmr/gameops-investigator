@@ -100,6 +100,14 @@ CLI 将工具结果（包括 `ok: false` 的错误）以 JSON 写入标准输出
 
 ## Agent 调用轨迹检查
 
+要重新执行一个合成数据调查，并立即检查本次运行的轨迹：
+
+```powershell
+.\.venv\Scripts\python.exe -m gameops_investigator.cli investigate tutorial_failure --audit
+```
+
+输出保留完整调查结果，并增加 `trajectory_audit` 和顶层 `ok`。审计不通过时退出码为 `1`；可加 `--max-tool-calls 20` 调整事后检查阈值，它不会提前停止调查。原有不带 `--audit` 的命令行为不变。
+
 除了检查报告，还可以离线检查一次调查的工具调用顺序、成功状态与调用次数：
 
 ```powershell

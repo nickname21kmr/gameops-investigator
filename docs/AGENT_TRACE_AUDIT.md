@@ -8,6 +8,20 @@ Use `audit-trace` to check a recorded GameOps investigation before reviewing its
 
 No model credentials are needed. The auditor only reads JSON: it never runs SQL, executes a tool, or replays a prompt found in the file. It prints a summary with stable violation codes and one-based step numbers. It does not print tool arguments, report text, raw errors, or the input path. CLI exit codes are `0` for pass, `1` for an audit/input failure, and `2` for invalid command-line syntax.
 
+## Audit a fresh investigation
+
+Run the deterministic investigation once and immediately audit the result in memory:
+
+```powershell
+.\.venv\Scripts\python.exe -m gameops_investigator.cli investigate tutorial_failure --audit
+```
+
+Unlike `audit-trace`, this command executes the synthetic-data investigation's read-only tools. It does not call Claude, read an old trace, or write report files. It preserves the complete investigation JSON, including SQL arguments and report text, and adds `trajectory_audit` and top-level `ok`. The summary-only privacy behavior of `audit-trace` does **not** apply to the complete investigation output; review it before publishing.
+
+An audit violation, or an explicitly failed investigation, produces `ok: false` and exit code `1`. A passing audit does not erase an existing investigation failure. Investigation exceptions still follow the existing behavior; this option does not add exception recovery. The report remains available for diagnosis and human review, even when the audit fails.
+
+`--max-tool-calls` requires `--audit` for this command and defaults to `20`. Out-of-range budgets (outside `1–10000`) and incompatible flags are rejected with exit code `2` **before** running an investigation. The threshold is checked after the run; it does not interrupt tools or limit their runtime. Omitting `--audit` preserves the original output and exit behavior. Standalone `audit-trace` keeps its existing input-error exit codes.
+
 ## Input and rules
 
 Input is either a list of calls or an investigation object containing that list under `trace`. Each call needs `tool` (string), `arguments` (object), and `ok` (boolean). Other fields are ignored. Files must be UTF-8 JSON, optionally with a BOM, and at most 2 MiB.

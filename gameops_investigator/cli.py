@@ -5,7 +5,7 @@ import json
 
 from .orchestrator import ClaudeCodeRunner, DeterministicInvestigator
 from .tools import query_metrics
-from .trace_audit import audit_trace_file
+from .trace_audit import audit_trace, audit_trace_file
 
 
 def main() -> int:
@@ -13,6 +13,8 @@ def main() -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
     investigate = subparsers.add_parser("investigate", help="Run a reproducible incident investigation")
     investigate.add_argument("scenario", choices=["tutorial_failure", "segment_churn", "duplicate_tracking"])
+    investigate.add_argument("--audit", action="store_true", help="Audit this run's tool trajectory before returning its status")
+    investigate.add_argument("--max-tool-calls", type=int, default=None, help="Post-run audit budget (1-10000, default 20; requires --audit)")
     sql = subparsers.add_parser("query", help="Run validated read-only SQL")
     sql.add_argument("sql")
     sql.add_argument("--row-limit", type=int, default=200, help="Maximum rows to return (1-500)")
@@ -25,7 +27,19 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.command == "investigate":
+        if args.max_tool_calls is not None and not args.audit:
+            parser.error("investigate --max-tool-calls requires --audit")
+        budget = 20 if args.max_tool_calls is None else args.max_tool_calls
+        if not 1 <= budget <= 10000:
+            parser.error("investigate --max-tool-calls must be between 1 and 10000")
         result = DeterministicInvestigator().investigate(args.scenario)
+        if args.audit:
+            audit_result = audit_trace(result, max_tool_calls=budget)
+            result = {
+                **result,
+                "trajectory_audit": audit_result,
+                "ok": audit_result["ok"] is True and result.get("ok") is not False,
+            }
     elif args.command == "query":
         result = query_metrics(args.sql, row_limit=args.row_limit, timeout_ms=args.timeout_ms)
     elif args.command == "audit-trace":
