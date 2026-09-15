@@ -56,13 +56,15 @@ def test_cli_reports_timeout_as_json_and_failure_exit(monkeypatch, ready_runner,
 
 
 def test_success_keeps_payload_and_tool_restrictions(monkeypatch, ready_runner):
+    payload = {"type": "result", "subtype": "success", "is_error": False, "result": "test report"}
+
     def complete(command, **kwargs):
         assert command[command.index("--allowedTools") + 1] == ready_runner.ALLOWED_TOOLS
         assert command[command.index("--disallowedTools") + 1] == "Bash,Write,Edit,WebFetch,WebSearch"
         assert kwargs["timeout"] == 300
-        return subprocess.CompletedProcess(command, 0, '{"result": "test report"}', "")
+        return subprocess.CompletedProcess(command, 0, json.dumps(payload), "")
 
     monkeypatch.setattr(orchestrator.subprocess, "run", complete)
     result = ready_runner.run("test question")
     assert result["ok"] is True
-    assert result["payload"] == {"result": "test report"}
+    assert result["payload"] == payload

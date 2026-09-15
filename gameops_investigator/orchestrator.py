@@ -406,16 +406,48 @@ class ClaudeCodeRunner:
                 "elapsed_ms": round((time.perf_counter() - started) * 1000, 3),
             }
         elapsed_ms = (time.perf_counter() - started) * 1000
-        if completed.returncode != 0:
+
+        def response_failure(code: str, message: str) -> dict[str, Any]:
             return {
                 "ok": False,
                 "mode": "claude_code",
+                "error_code": code,
                 "returncode": completed.returncode,
-                "error": (completed.stderr or completed.stdout).strip()[-3000:],
+                "error": message,
                 "elapsed_ms": round(elapsed_ms, 3),
             }
+
+        if completed.returncode != 0:
+            return response_failure(
+                "process_failed", "Claude Code exited unsuccessfully. Inspect the run locally before retrying."
+            )
         try:
             payload = json.loads(completed.stdout)
-        except json.JSONDecodeError:
-            payload = {"result": completed.stdout.strip()}
+        except (json.JSONDecodeError, RecursionError):
+            return response_failure(
+                "invalid_json", "Claude Code returned unreadable JSON. Check the local CLI version and output format."
+            )
+        invalid_response_message = "Claude Code returned an unsupported result. Check the local CLI version and output format."
+        if (
+            not isinstance(payload, dict)
+            or payload.get("type") != "result"
+            or not isinstance(payload.get("subtype"), str)
+            or not payload["subtype"]
+            or type(payload.get("is_error")) is not bool
+        ):
+            return response_failure("invalid_response", invalid_response_message)
+        error_subtypes = {
+            "error_max_turns", "error_during_execution",
+            "error_max_budget_usd", "error_max_structured_output_retries",
+        }
+        if payload["is_error"] or payload["subtype"] in error_subtypes:
+            return response_failure(
+                "agent_result_error", "Claude Code reported a failed or incomplete run. Inspect the run locally before retrying."
+            )
+        if (
+            payload["subtype"] != "success"
+            or not isinstance(payload.get("result"), str)
+            or not payload["result"].strip()
+        ):
+            return response_failure("invalid_response", invalid_response_message)
         return {"ok": True, "mode": "claude_code", "payload": payload, "elapsed_ms": round(elapsed_ms, 3)}
