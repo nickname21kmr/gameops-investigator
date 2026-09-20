@@ -77,6 +77,8 @@ def draft_incident_report(
     candidates: list[dict[str, Any]],
     evidence: list[dict[str, Any]],
     limitations: list[str] | None = None,
+    investigation_status: str | None = None,
+    investigation_reason: str | None = None,
 ) -> dict[str, Any]:
     """Create an auditable report draft whose citations are validated against an evidence ledger."""
     return {
@@ -89,6 +91,8 @@ def draft_incident_report(
             candidates=candidates,
             evidence=evidence,
             limitations=limitations,
+            investigation_status=investigation_status,
+            investigation_reason=investigation_reason,
         ),
     }
 

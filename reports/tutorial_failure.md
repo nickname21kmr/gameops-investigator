@@ -1,8 +1,10 @@
 # 教程关键步失败率升高，D1 留存同步下降
 
-- Report ID: `IR-BCA45CB5B0`
-- Generated at: `2026-08-30T01:00:19+00:00`
+- Report ID: `IR-2989C12F29`
+- Generated at: `2026-09-20T14:44:03+00:00`
 - Decision status: `human_review_required`
+- Investigation status: `supported`
+- Investigation outcome: 焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。
 - Dataset: synthetic NewtonMarket demo data; not production player behavior
 
 ## Alert summary
@@ -65,7 +67,7 @@ Result digest: `4fd5735f01c40174`
 SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100
 ```
 
-Result digest: `18146ab4434db6df`
+Result digest: `c84f373736a9649e`
 
 ## Recommended next actions
 

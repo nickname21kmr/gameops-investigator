@@ -2,7 +2,7 @@
 
 > **English overview** — Investigate tutorial drop-off, cohort churn, and duplicate tracking events with read-only SQL and statistical comparisons. Generate reports with ranked cause candidates, supporting queries, and findings for analyst review. Built with synthetic game data; supports Claude Code through MCP and a deterministic replay mode for offline use.
 >
-> [Architecture](docs/architecture.png) · [Demo GIF](docs/demo.gif) · [Security boundary](docs/SECURITY.md) · [Onboarding](docs/ONBOARDING.md) · [Evaluation cases](evals/cases.jsonl)
+> [Architecture](docs/architecture.png) · [Demo GIF](docs/demo.gif) · [Security boundary](docs/SECURITY.md) · [Onboarding](docs/ONBOARDING.md) · [AI-assisted repair record](docs/AI_CODING_WORKFLOW.md)
 
 用于排查教程掉点、分群流失和重复埋点的游戏数据调查工具。它通过只读 SQL、分群对比和统计检验整理候选原因，生成附有查询证据、限制说明和待复核结论的报告。
 
@@ -16,17 +16,34 @@ Claude Code 负责规划排查步骤与解释结果；指标计算、SQL 执行�
 
 ## 调查流程与示例
 
-`指标告警 -> Claude/回放协调器制定排查计划 -> MCP 工具调用 -> SQL 与分群下钻 -> 原因 Top-3 + 证据 -> 人工复核报告`
+`指标告警 -> Claude/回放协调器制定排查计划 -> MCP 工具调用 -> SQL 与分群下钻 -> 证据门槛 -> 至多三个候选或说明无法支持归因 -> 人工复核报告`
 
 内置三个可复现案例：
 
 1. 教程关键步完成率下降，D1 留存同步下滑。
 2. `leveraged` 玩家分群流失，整体检验未越过阈值但分群显著。
-3. `system_opened` 重复上报，事件级强度虚高而玩家级采用率基本稳定。
+3. `system_opened` 重复上报，事件级强度与重复率上升，未检出玩家级采用率显著上升；这不等于证明采用率不变。
 
 工作台提供调查结论、完整工具调用记录、只读 SQL 沙盒和维度下钻图，也可查看 40 条固定评测及安全边界说明。
 
 查看一份已生成的[教程掉点调查报告](reports/tutorial_failure.md)：报告列出告警变化、三个候选原因及其依据，并保留 SQL、证据 ID 和后续检查建议。对应的[工具调用记录](reports/tutorial_failure.trace.json)可用于核对调查过程。
+
+### 证据不足时会怎样
+
+确定性回放区分以下结果，工作台、CLI 和报告索引均保留状态与原因：
+
+| 状态 | 含义 | 候选输出 |
+| --- | --- | --- |
+| `supported` | 焦点异常及必需关联指标符合当前固定排查规则 | 至多三个候选，区分支持项与其他解释 |
+| `insufficient_evidence` | 空数据、缺失必需指标/查询，或任一窗口样本不足 | 空列表 |
+| `no_supported_candidate` | 数据可比较，但方向或统计结果不支持该场景假设 | 空列表 |
+| `tool_failure` | 调查或报告工具失败 | 空列表，`ok: false`，CLI 退出码为 1 |
+
+两个窗口均需满足最小分母 20，焦点变化需符合假设方向并达到 z 门槛 1.96；教程案例另需完成率同向显著下降，重复上报案例另查重复签名率与玩家采用率。候选置信等级沿用必需支持比较中较弱的一项，不把 medium 自动升为 high。非显著结果不证明“没有变化”；这些门槛也不构成因果证明或经过多重检验校正的普适规则。
+
+这是固定场景回放的程序校验。开放式 Claude 调查仍需单独评测；MCP 报告工具检查引用 ID，不验证模型给出的全部语义判断。
+
+2026-09-20 的[实际 AI 辅助修复记录](docs/AI_CODING_WORKFLOW.md)展示了空数据误归因、JOIN 后人数膨胀的复现、修复与验证，也说明了项目负责人和 AI 在这次工作的分工。
 
 ## 一键运行（Windows）
 
@@ -91,7 +108,7 @@ CLI 将工具结果（包括 `ok: false` 的错误）以 JSON 写入标准输出
 
 - 工具选择准确率；
 - SQL 安全策略预期结果率；
-- 原因候选 Top-3 命中率；
+- 原因候选 Top-3 命中率（调查成功、状态为 `supported`，且预期项为 `supported_candidate` 才计入）；
 - 报告引用准确率；
 - 本地 p50 / p95 延迟；
 - Claude Code 运行状态与成本边界。
@@ -108,7 +125,7 @@ CLI 将工具结果（包括 `ok: false` 的错误）以 JSON 写入标准输出
 .\.venv\Scripts\python.exe -m gameops_investigator.cli investigate tutorial_failure --audit
 ```
 
-输出保留完整调查结果，并增加 `trajectory_audit` 和顶层 `ok`。审计不通过时退出码为 `1`；可加 `--max-tool-calls 20` 调整事后检查阈值，它不会提前停止调查。原有不带 `--audit` 的命令行为不变。
+输出保留完整调查结果，并增加 `trajectory_audit`；顶层 `ok` 同时考虑调查与审计结果。工具失败或审计不通过时退出码为 `1`；可加 `--max-tool-calls 20` 调整事后检查阈值，它不会提前停止调查。证据不足且工具正常完成时退出码仍为 `0`，调用方应另外读取 `investigation_status`。
 
 除了检查报告，还可以离线检查一次调查的工具调用顺序、成功状态与调用次数：
 

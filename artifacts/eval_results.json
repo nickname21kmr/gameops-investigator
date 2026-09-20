@@ -13,14 +13,14 @@
     "report_citation_accuracy": 1.0,
     "metric_contract_accuracy": 1.0,
     "governance_behavior_accuracy": 1.0,
-    "p50_case_latency_ms": 0.014,
-    "p95_case_latency_ms": 454.724,
+    "p50_case_latency_ms": 0.02,
+    "p95_case_latency_ms": 422.682,
     "deterministic_local_cost_usd": 0.0,
     "claude_single_analysis_cost_usd": null,
     "claude_cost_note": "Not measured until Claude Code completes an authenticated run; no number is inferred from a Pro subscription."
   },
   "claude_code": {
-    "installed": true,
+    "installed": false,
     "logged_in": false,
     "auth_check_failed": false,
     "evaluation": "not_run; use --claude after interactive sign-in"
@@ -32,7 +32,7 @@
       "id": "route_001",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.022,
+      "elapsed_ms": 0.254,
       "actual_tool": "get_metric_definition",
       "expected_tool": "get_metric_definition"
     },
@@ -40,7 +40,7 @@
       "id": "route_002",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.009,
+      "elapsed_ms": 0.023,
       "actual_tool": "get_metric_definition",
       "expected_tool": "get_metric_definition"
     },
@@ -48,7 +48,7 @@
       "id": "route_003",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.006,
+      "elapsed_ms": 0.008,
       "actual_tool": "get_metric_definition",
       "expected_tool": "get_metric_definition"
     },
@@ -56,7 +56,7 @@
       "id": "route_004",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.006,
+      "elapsed_ms": 0.012,
       "actual_tool": "query_metrics",
       "expected_tool": "query_metrics"
     },
@@ -64,7 +64,7 @@
       "id": "route_005",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.005,
+      "elapsed_ms": 0.011,
       "actual_tool": "query_metrics",
       "expected_tool": "query_metrics"
     },
@@ -72,7 +72,7 @@
       "id": "route_006",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.004,
+      "elapsed_ms": 0.01,
       "actual_tool": "query_metrics",
       "expected_tool": "query_metrics"
     },
@@ -80,7 +80,7 @@
       "id": "route_007",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.003,
+      "elapsed_ms": 0.007,
       "actual_tool": "compare_cohorts",
       "expected_tool": "compare_cohorts"
     },
@@ -88,7 +88,7 @@
       "id": "route_008",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.004,
+      "elapsed_ms": 0.007,
       "actual_tool": "compare_cohorts",
       "expected_tool": "compare_cohorts"
     },
@@ -96,7 +96,7 @@
       "id": "route_009",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.003,
+      "elapsed_ms": 0.007,
       "actual_tool": "compare_cohorts",
       "expected_tool": "compare_cohorts"
     },
@@ -104,7 +104,7 @@
       "id": "route_010",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.002,
+      "elapsed_ms": 0.009,
       "actual_tool": "detect_anomalies",
       "expected_tool": "detect_anomalies"
     },
@@ -112,7 +112,7 @@
       "id": "route_011",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.003,
+      "elapsed_ms": 0.005,
       "actual_tool": "detect_anomalies",
       "expected_tool": "detect_anomalies"
     },
@@ -120,7 +120,7 @@
       "id": "route_012",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.002,
+      "elapsed_ms": 0.005,
       "actual_tool": "detect_anomalies",
       "expected_tool": "detect_anomalies"
     },
@@ -128,7 +128,7 @@
       "id": "route_013",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.002,
+      "elapsed_ms": 0.004,
       "actual_tool": "draft_incident_report",
       "expected_tool": "draft_incident_report"
     },
@@ -136,7 +136,7 @@
       "id": "route_014",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.002,
+      "elapsed_ms": 0.003,
       "actual_tool": "draft_incident_report",
       "expected_tool": "draft_incident_report"
     },
@@ -144,7 +144,7 @@
       "id": "route_015",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.002,
+      "elapsed_ms": 0.003,
       "actual_tool": "draft_incident_report",
       "expected_tool": "draft_incident_report"
     },
@@ -152,7 +152,7 @@
       "id": "route_016",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.004,
+      "elapsed_ms": 0.011,
       "actual_tool": "query_metrics",
       "expected_tool": "query_metrics"
     },
@@ -160,7 +160,7 @@
       "id": "route_017",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.003,
+      "elapsed_ms": 0.008,
       "actual_tool": "compare_cohorts",
       "expected_tool": "compare_cohorts"
     },
@@ -168,7 +168,7 @@
       "id": "route_018",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.002,
+      "elapsed_ms": 0.004,
       "actual_tool": "detect_anomalies",
       "expected_tool": "detect_anomalies"
     },
@@ -176,7 +176,7 @@
       "id": "route_019",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.005,
+      "elapsed_ms": 0.008,
       "actual_tool": "get_metric_definition",
       "expected_tool": "get_metric_definition"
     },
@@ -184,7 +184,7 @@
       "id": "route_020",
       "type": "tool_routing",
       "passed": true,
-      "elapsed_ms": 0.001,
+      "elapsed_ms": 0.003,
       "actual_tool": "draft_incident_report",
       "expected_tool": "draft_incident_report"
     },
@@ -192,7 +192,7 @@
       "id": "sql_001",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 16.723,
+      "elapsed_ms": 10.585,
       "actual_pass": true,
       "expected_pass": true,
       "error": null
@@ -201,7 +201,7 @@
       "id": "sql_002",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 7.974,
+      "elapsed_ms": 10.634,
       "actual_pass": true,
       "expected_pass": true,
       "error": null
@@ -210,7 +210,7 @@
       "id": "sql_003",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 267.234,
+      "elapsed_ms": 244.749,
       "actual_pass": true,
       "expected_pass": true,
       "error": null
@@ -219,7 +219,7 @@
       "id": "sql_004",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 0.034,
+      "elapsed_ms": 0.047,
       "actual_pass": false,
       "expected_pass": false,
       "error": "query_rejected_or_unavailable"
@@ -228,7 +228,7 @@
       "id": "sql_005",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 0.016,
+      "elapsed_ms": 0.018,
       "actual_pass": false,
       "expected_pass": false,
       "error": "query_rejected_or_unavailable"
@@ -237,7 +237,7 @@
       "id": "sql_006",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 0.012,
+      "elapsed_ms": 0.013,
       "actual_pass": false,
       "expected_pass": false,
       "error": "query_rejected_or_unavailable"
@@ -246,7 +246,7 @@
       "id": "sql_007",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 3.348,
+      "elapsed_ms": 2.835,
       "actual_pass": false,
       "expected_pass": false,
       "error": "query_rejected_or_unavailable"
@@ -255,7 +255,7 @@
       "id": "sql_008",
       "type": "sql_policy",
       "passed": true,
-      "elapsed_ms": 0.028,
+      "elapsed_ms": 0.03,
       "actual_pass": false,
       "expected_pass": false,
       "error": "query_rejected_or_unavailable"
@@ -264,78 +264,93 @@
       "id": "incident_001",
       "type": "incident_attribution",
       "passed": true,
-      "elapsed_ms": 858.961,
+      "elapsed_ms": 660.896,
       "candidate_ids": [
         "upstream_tutorial_drop",
         "downstream_trade_regression",
         "channel_mix_shift"
       ],
-      "expected_top3": "upstream_tutorial_drop"
+      "supported_candidate_ids": [
+        "upstream_tutorial_drop"
+      ],
+      "expected_top3": "upstream_tutorial_drop",
+      "run_ok": true,
+      "investigation_status": "supported"
     },
     {
       "id": "incident_002",
       "type": "incident_attribution",
       "passed": true,
-      "elapsed_ms": 433.448,
+      "elapsed_ms": 410.145,
       "candidate_ids": [
         "segment_leveraged_churn",
         "version_wide_regression",
         "random_cohort_noise"
       ],
-      "expected_top3": "segment_leveraged_churn"
+      "supported_candidate_ids": [
+        "segment_leveraged_churn"
+      ],
+      "expected_top3": "segment_leveraged_churn",
+      "run_ok": true,
+      "investigation_status": "supported"
     },
     {
       "id": "incident_003",
       "type": "incident_attribution",
       "passed": true,
-      "elapsed_ms": 907.864,
+      "elapsed_ms": 676.466,
       "candidate_ids": [
         "duplicate_event_reporting",
         "real_usage_expansion",
         "channel_mix_shift"
       ],
-      "expected_top3": "duplicate_event_reporting"
+      "supported_candidate_ids": [
+        "duplicate_event_reporting"
+      ],
+      "expected_top3": "duplicate_event_reporting",
+      "run_ok": true,
+      "investigation_status": "supported"
     },
     {
       "id": "metric_001",
       "type": "metric_contract",
       "passed": true,
-      "elapsed_ms": 1.195,
+      "elapsed_ms": 1.242,
       "missing_tokens": []
     },
     {
       "id": "metric_002",
       "type": "metric_contract",
       "passed": true,
-      "elapsed_ms": 1.032,
+      "elapsed_ms": 0.992,
       "missing_tokens": []
     },
     {
       "id": "metric_003",
       "type": "metric_contract",
       "passed": true,
-      "elapsed_ms": 1.313,
+      "elapsed_ms": 0.941,
       "missing_tokens": []
     },
     {
       "id": "metric_004",
       "type": "metric_contract",
       "passed": true,
-      "elapsed_ms": 1.003,
+      "elapsed_ms": 0.868,
       "missing_tokens": []
     },
     {
       "id": "metric_005",
       "type": "metric_contract",
       "passed": true,
-      "elapsed_ms": 1.091,
+      "elapsed_ms": 1.133,
       "missing_tokens": []
     },
     {
       "id": "gov_001",
       "type": "governance",
       "passed": true,
-      "elapsed_ms": 0.034,
+      "elapsed_ms": 0.032,
       "check": "human_review_required",
       "actual": true
     },
@@ -343,7 +358,7 @@
       "id": "gov_002",
       "type": "governance",
       "passed": true,
-      "elapsed_ms": 0.028,
+      "elapsed_ms": 0.026,
       "check": "citation_valid",
       "actual": true
     },
@@ -351,7 +366,7 @@
       "id": "gov_003",
       "type": "governance",
       "passed": true,
-      "elapsed_ms": 0.026,
+      "elapsed_ms": 0.023,
       "check": "synthetic_disclosure",
       "actual": true
     },
@@ -359,7 +374,7 @@
       "id": "gov_004",
       "type": "governance",
       "passed": true,
-      "elapsed_ms": 0.024,
+      "elapsed_ms": 0.022,
       "check": "uncertainty_disclosure",
       "actual": true
     }

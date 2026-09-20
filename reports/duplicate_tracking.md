@@ -1,8 +1,10 @@
 # 埋点重复上报导致高级系统参与强度虚高
 
-- Report ID: `IR-5015DD94CE`
-- Generated at: `2026-08-30T01:00:20+00:00`
+- Report ID: `IR-EACDFC1B30`
+- Generated at: `2026-09-20T14:44:04+00:00`
 - Decision status: `human_review_required`
+- Investigation status: `supported`
+- Investigation outcome: 焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。
 - Dataset: synthetic NewtonMarket demo data; not production player behavior
 
 ## Alert summary
@@ -16,8 +18,8 @@ The detector used `log_rate_ratio_z` with a z-threshold of `1.96`.
 
 - Confidence: `high`
 - Status: `supported_candidate`
-- Evidence: `E05`, `E06`
-- Reasoning: 重复签名率变化为 6.245614; 玩家级采用率变化为 1.976035。事件级上升但玩家级采用未同步，是数据质量问题的典型证据组合。
+- Evidence: `E03`, `E05`, `E04`, `E06`
+- Reasoning: 重复签名率变化为 6.245614; 玩家级采用率变化为 1.976035。事件强度与重复率显著上升，未检出玩家采用率显著上升；未检出不等于证明采用率不变，仍需人工核对埋点。
 
 ### 2. 玩家真实提高了高级系统使用频次
 
@@ -61,7 +63,7 @@ Result digest: `830e34cdc2ebe927`
 SELECT u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type, COUNT(*) AS copies FROM events e JOIN users u ON u.user_id = e.user_id WHERE e.event_name = 'system_opened' AND u.app_version = '0.9.2' AND u.install_date BETWEEN '2026-08-04' AND '2026-08-10' GROUP BY u.install_date, u.channel, e.user_id, e.event_time, e.session_id, e.product_type HAVING COUNT(*) > 1 ORDER BY copies DESC LIMIT 50
 ```
 
-Result digest: `834f7e9a309a9b66`
+Result digest: `6fcca047ca99384a`
 
 ## Recommended next actions
 

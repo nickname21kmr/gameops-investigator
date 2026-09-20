@@ -3,21 +3,30 @@
     "report": "reports\\tutorial_failure.md",
     "trace": "reports\\tutorial_failure.trace.json",
     "top_candidate": "upstream_tutorial_drop",
-    "elapsed_ms": 303.899,
+    "investigation_status": "supported",
+    "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
+    "ok": true,
+    "elapsed_ms": 773.696,
     "citation_valid": true
   },
   "segment_churn": {
     "report": "reports\\segment_churn.md",
     "trace": "reports\\segment_churn.trace.json",
     "top_candidate": "segment_leveraged_churn",
-    "elapsed_ms": 256.183,
+    "investigation_status": "supported",
+    "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
+    "ok": true,
+    "elapsed_ms": 412.29,
     "citation_valid": true
   },
   "duplicate_tracking": {
     "report": "reports\\duplicate_tracking.md",
     "trace": "reports\\duplicate_tracking.trace.json",
     "top_candidate": "duplicate_event_reporting",
-    "elapsed_ms": 359.036,
+    "investigation_status": "supported",
+    "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
+    "ok": true,
+    "elapsed_ms": 662.051,
     "citation_valid": true
   }
 }

@@ -26,9 +26,12 @@ def generate() -> dict:
         summary[scenario_id] = {
             "report": str(markdown_path.relative_to(PROJECT_ROOT)),
             "trace": str(trace_path.relative_to(PROJECT_ROOT)),
-            "top_candidate": result["candidates"][0]["id"],
+            "top_candidate": result["candidates"][0]["id"] if result["candidates"] else None,
+            "investigation_status": result["investigation_status"],
+            "investigation_reason": result["investigation_reason"],
+            "ok": result["ok"],
             "elapsed_ms": result["elapsed_ms"],
-            "citation_valid": result["report"]["citation_check"]["valid"],
+            "citation_valid": result["report"].get("citation_check", {}).get("valid", False),
         }
     (REPORTS / "index.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     return summary

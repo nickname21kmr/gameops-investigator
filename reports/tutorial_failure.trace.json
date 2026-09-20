@@ -1,4 +1,7 @@
 {
+  "ok": true,
+  "investigation_status": "supported",
+  "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
   "scenario_id": "tutorial_failure",
   "title": "教程关键步失败率升高，D1 留存同步下降",
   "mode": "deterministic_replay",
@@ -1280,7 +1283,7 @@
     {
       "evidence_id": "E07",
       "title": "query_metrics",
-      "digest": "18146ab4434db6df",
+      "digest": "c84f373736a9649e",
       "sql": "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100",
       "result": {
         "ok": true,
@@ -1438,7 +1441,7 @@
         ],
         "row_count": 24,
         "truncated": false,
-        "elapsed_ms": 52.606,
+        "elapsed_ms": 66.284,
         "executed_sql": "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100",
         "policy": "read_only_allowlist"
       }
@@ -1446,14 +1449,16 @@
     {
       "evidence_id": "E08",
       "title": "draft_incident_report",
-      "digest": "e561ed34ce1c999f",
+      "digest": "55c1d96636c0c667",
       "sql": null,
       "result": {
         "ok": true,
-        "report_id": "IR-BCA45CB5B0",
-        "generated_at": "2026-08-30T01:00:19+00:00",
+        "report_id": "IR-2989C12F29",
+        "generated_at": "2026-09-20T14:44:03+00:00",
         "review_status": "human_review_required",
-        "markdown": "# 教程关键步失败率升高，D1 留存同步下降\n\n- Report ID: `IR-BCA45CB5B0`\n- Generated at: `2026-08-30T01:00:19+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **36.57%** to **22.94%** (-13.64 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 教程关键步完成下降是 D1 留存下滑的首要上游候选\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E04`, `E07`\n- Reasoning: campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。\n\n### 2. 交易环节或后续回合体验退化\n\n- Confidence: `low`\n- Status: `secondary`\n- Evidence: `E05`, `E06`\n- Reasoning: 下游指标受上游样本选择影响，必须先处理教程漏斗变化。\n\n### 3. 渠道用户结构变化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 需要额外的渠道获客与设备属性才能进一步确认。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `ac74434f5c17dbc0`\n\n### E03 — detect_anomalies\n\nResult digest: `15fbbef982a3bbbe`\n\n### E04 — compare_cohorts\n\nResult digest: `b0e42cf4a5555d6a`\n\n### E05 — compare_cohorts\n\nResult digest: `99e02538c4940307`\n\n### E06 — compare_cohorts\n\nResult digest: `4fd5735f01c40174`\n\n### E07 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100\n```\n\nResult digest: `18146ab4434db6df`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+        "investigation_status": "supported",
+        "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
+        "markdown": "# 教程关键步失败率升高，D1 留存同步下降\n\n- Report ID: `IR-2989C12F29`\n- Generated at: `2026-09-20T14:44:03+00:00`\n- Decision status: `human_review_required`\n- Investigation status: `supported`\n- Investigation outcome: 焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **36.57%** to **22.94%** (-13.64 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 教程关键步完成下降是 D1 留存下滑的首要上游候选\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E04`, `E07`\n- Reasoning: campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。\n\n### 2. 交易环节或后续回合体验退化\n\n- Confidence: `low`\n- Status: `secondary`\n- Evidence: `E05`, `E06`\n- Reasoning: 下游指标受上游样本选择影响，必须先处理教程漏斗变化。\n\n### 3. 渠道用户结构变化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 需要额外的渠道获客与设备属性才能进一步确认。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `ac74434f5c17dbc0`\n\n### E03 — detect_anomalies\n\nResult digest: `15fbbef982a3bbbe`\n\n### E04 — compare_cohorts\n\nResult digest: `b0e42cf4a5555d6a`\n\n### E05 — compare_cohorts\n\nResult digest: `99e02538c4940307`\n\n### E06 — compare_cohorts\n\nResult digest: `4fd5735f01c40174`\n\n### E07 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100\n```\n\nResult digest: `c84f373736a9649e`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
         "citation_check": {
           "valid": true,
           "cited_evidence_ids": [
@@ -1483,7 +1488,7 @@
       "arguments": {
         "metric_name": "d1_retention"
       },
-      "elapsed_ms": 0.854,
+      "elapsed_ms": 1.704,
       "ok": true,
       "evidence_id": "E01"
     },
@@ -1503,7 +1508,7 @@
         },
         "group_by": []
       },
-      "elapsed_ms": 36.693,
+      "elapsed_ms": 310.987,
       "ok": true,
       "evidence_id": "E02"
     },
@@ -1524,7 +1529,7 @@
         "min_denominator": 20,
         "z_threshold": 1.96
       },
-      "elapsed_ms": 55.992,
+      "elapsed_ms": 169.583,
       "ok": true,
       "evidence_id": "E03"
     },
@@ -1546,7 +1551,7 @@
           "channel"
         ]
       },
-      "elapsed_ms": 37.159,
+      "elapsed_ms": 66.893,
       "ok": true,
       "evidence_id": "E04"
     },
@@ -1568,7 +1573,7 @@
           "channel"
         ]
       },
-      "elapsed_ms": 58.861,
+      "elapsed_ms": 80.129,
       "ok": true,
       "evidence_id": "E05"
     },
@@ -1590,7 +1595,7 @@
           "channel"
         ]
       },
-      "elapsed_ms": 60.61,
+      "elapsed_ms": 75.821,
       "ok": true,
       "evidence_id": "E06"
     },
@@ -1601,7 +1606,7 @@
         "row_limit": 100,
         "timeout_ms": 3000
       },
-      "elapsed_ms": 52.801,
+      "elapsed_ms": 66.553,
       "ok": true,
       "evidence_id": "E07"
     },
@@ -1908,25 +1913,29 @@
           {
             "evidence_id": "E07",
             "title": "query_metrics",
-            "digest": "18146ab4434db6df",
+            "digest": "c84f373736a9649e",
             "sql": "SELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100"
           }
         ],
         "limitations": [
           "The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code."
-        ]
+        ],
+        "investigation_status": "supported",
+        "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。"
       },
-      "elapsed_ms": 0.137,
+      "elapsed_ms": 0.587,
       "ok": true,
       "evidence_id": "E08"
     }
   ],
   "report": {
     "ok": true,
-    "report_id": "IR-BCA45CB5B0",
-    "generated_at": "2026-08-30T01:00:19+00:00",
+    "report_id": "IR-2989C12F29",
+    "generated_at": "2026-09-20T14:44:03+00:00",
     "review_status": "human_review_required",
-    "markdown": "# 教程关键步失败率升高，D1 留存同步下降\n\n- Report ID: `IR-BCA45CB5B0`\n- Generated at: `2026-08-30T01:00:19+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **36.57%** to **22.94%** (-13.64 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 教程关键步完成下降是 D1 留存下滑的首要上游候选\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E04`, `E07`\n- Reasoning: campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。\n\n### 2. 交易环节或后续回合体验退化\n\n- Confidence: `low`\n- Status: `secondary`\n- Evidence: `E05`, `E06`\n- Reasoning: 下游指标受上游样本选择影响，必须先处理教程漏斗变化。\n\n### 3. 渠道用户结构变化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 需要额外的渠道获客与设备属性才能进一步确认。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `ac74434f5c17dbc0`\n\n### E03 — detect_anomalies\n\nResult digest: `15fbbef982a3bbbe`\n\n### E04 — compare_cohorts\n\nResult digest: `b0e42cf4a5555d6a`\n\n### E05 — compare_cohorts\n\nResult digest: `99e02538c4940307`\n\n### E06 — compare_cohorts\n\nResult digest: `4fd5735f01c40174`\n\n### E07 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100\n```\n\nResult digest: `18146ab4434db6df`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+    "investigation_status": "supported",
+    "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
+    "markdown": "# 教程关键步失败率升高，D1 留存同步下降\n\n- Report ID: `IR-2989C12F29`\n- Generated at: `2026-09-20T14:44:03+00:00`\n- Decision status: `human_review_required`\n- Investigation status: `supported`\n- Investigation outcome: 焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **36.57%** to **22.94%** (-13.64 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. 教程关键步完成下降是 D1 留存下滑的首要上游候选\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E04`, `E07`\n- Reasoning: campus_demo 的教程完成率变化为 -62.345117，并与同 cohort 的留存方向一致；这仍是关联证据而非因果证明。\n\n### 2. 交易环节或后续回合体验退化\n\n- Confidence: `low`\n- Status: `secondary`\n- Evidence: `E05`, `E06`\n- Reasoning: 下游指标受上游样本选择影响，必须先处理教程漏斗变化。\n\n### 3. 渠道用户结构变化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 需要额外的渠道获客与设备属性才能进一步确认。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `ac74434f5c17dbc0`\n\n### E03 — detect_anomalies\n\nResult digest: `15fbbef982a3bbbe`\n\n### E04 — compare_cohorts\n\nResult digest: `b0e42cf4a5555d6a`\n\n### E05 — compare_cohorts\n\nResult digest: `99e02538c4940307`\n\n### E06 — compare_cohorts\n\nResult digest: `4fd5735f01c40174`\n\n### E07 — query_metrics\n\n```sql\nSELECT u.install_date, u.channel, COUNT(DISTINCT u.user_id) AS installs, COUNT(DISTINCT CASE WHEN e.event_name = 'opening_item_selected' THEN u.user_id END) AS tutorial_completed FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.install_date BETWEEN '2026-08-07' AND '2026-08-14' GROUP BY u.install_date, u.channel ORDER BY u.install_date, u.channel LIMIT 100\n```\n\nResult digest: `c84f373736a9649e`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
     "citation_check": {
       "valid": true,
       "cited_evidence_ids": [
@@ -1948,5 +1957,5 @@
       "unknown_references": []
     }
   },
-  "elapsed_ms": 303.899
+  "elapsed_ms": 773.696
 }

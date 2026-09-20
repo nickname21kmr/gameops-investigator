@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import shutil
+import sqlite3
 import subprocess
 import time
 from dataclasses import dataclass
@@ -45,6 +47,9 @@ class DeterministicInvestigator:
     deliberately labelled as a replay coordinator rather than an LLM.
     """
 
+    MIN_DENOMINATOR = 20
+    Z_THRESHOLD = 1.96
+
     def __init__(self):
         self.scenarios = scenario_catalog()
         self.trace: list[TraceCall] = []
@@ -52,7 +57,15 @@ class DeterministicInvestigator:
 
     def _call(self, name: str, function: Callable[..., dict[str, Any]], **arguments: Any) -> dict[str, Any]:
         started = time.perf_counter()
-        result = function(**arguments)
+        try:
+            result = function(**arguments)
+        except (OSError, ValueError, sqlite3.Error):
+            # Unexpected programming errors still propagate.
+            result = {"ok": False}
+        if result.get("ok") is False:
+            # Both raised and returned failures may contain private diagnostics
+            # or arbitrary payloads. Export only this stable failure object.
+            result = {"ok": False, "error": "The investigation tool could not complete."}
         elapsed = (time.perf_counter() - started) * 1000
         evidence_id = f"E{len(self.evidence) + 1:02d}"
         self.trace.append(TraceCall(name, arguments, elapsed, bool(result.get("ok", True)), evidence_id))
@@ -95,11 +108,12 @@ class DeterministicInvestigator:
         dimension = scenario["breakdown_dimension"]
         focus_value = scenario["focus_value"]
 
-        definition = self._call(
+        definition_result = self._call(
             "get_metric_definition",
             get_metric_definition,
             metric_name=alert_metric,
-        )["definition"]
+        )
+        definition = definition_result.get("definition", {"metric_id": alert_metric})
         overall = self._call(
             "compare_cohorts",
             compare_cohorts,
@@ -118,8 +132,8 @@ class DeterministicInvestigator:
             baseline_end=baseline["end_date"],
             dimensions=[dimension],
             filters=self._shared_filters(current),
-            min_denominator=20,
-            z_threshold=1.96,
+            min_denominator=self.MIN_DENOMINATOR,
+            z_threshold=self.Z_THRESHOLD,
         )
 
         related: dict[str, dict[str, Any]] = {}
@@ -139,6 +153,9 @@ class DeterministicInvestigator:
         for sql in scenario.get("evidence_queries", []):
             self._call("query_metrics", query_metrics, sql=sql, row_limit=100, timeout_ms=3000)
 
+        investigation_status, investigation_reason = self._evidence_status(
+            overall, anomaly, related, dimension, focus_value,
+        )
         candidates = self._rank_candidates(
             scenario_id,
             scenario,
@@ -148,7 +165,7 @@ class DeterministicInvestigator:
             related_refs,
             dimension,
             focus_value,
-        )
+        ) if investigation_status == "supported" else []
         report = self._call(
             "draft_incident_report",
             draft_incident_report,
@@ -162,9 +179,26 @@ class DeterministicInvestigator:
                 for item in self.evidence
             ],
             limitations=["The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code."],
+            investigation_status=investigation_status,
+            investigation_reason=investigation_reason,
         )
+        if report.get("ok") is False:
+            investigation_status = "tool_failure"
+            investigation_reason = "报告生成失败；请检查工具状态后重新调查。"
+            candidates = []
+            report = {
+                **report,
+                "review_status": "human_review_required",
+                "investigation_status": investigation_status,
+                "investigation_reason": investigation_reason,
+                "markdown": "# Investigation incomplete\n\nReport generation failed. No cause is supported by this run.\n",
+                "citation_check": {"valid": False},
+            }
         total_ms = (time.perf_counter() - started) * 1000
         return {
+            "ok": investigation_status != "tool_failure",
+            "investigation_status": investigation_status,
+            "investigation_reason": investigation_reason,
             "scenario_id": scenario_id,
             "title": scenario["title"],
             "mode": "deterministic_replay",
@@ -186,6 +220,89 @@ class DeterministicInvestigator:
             "report": report,
             "elapsed_ms": round(total_ms, 3),
         }
+
+    @staticmethod
+    def _finite_number(value: Any) -> bool:
+        return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+    def _usable_comparison(self, row: dict[str, Any] | None) -> bool:
+        if not row or not self._finite_number(row.get("delta")):
+            return False
+        for window in ("current", "baseline"):
+            sample = row.get(window, {})
+            denominator = sample.get("denominator")
+            if (
+                not self._finite_number(denominator)
+                or denominator < self.MIN_DENOMINATOR
+                or not self._finite_number(sample.get("value"))
+            ):
+                return False
+        return self._finite_number(row.get("z_score"))
+
+    def _significant_change(self, row: dict[str, Any], direction: int) -> bool:
+        return (
+            self._usable_comparison(row)
+            and row["delta"] * direction > 0
+            and row["z_score"] * direction >= self.Z_THRESHOLD
+        )
+
+    @staticmethod
+    def _supported_confidence(*rows: dict[str, Any]) -> str:
+        # Called only after the support gate; retain the weakest supporting
+        # comparison's tier instead of promoting every detected change to high.
+        ranks = {"high": 2, "medium": 1}
+        return min((row.get("confidence", "low") for row in rows), key=lambda value: ranks.get(value, 0))
+
+    def _evidence_status(
+        self,
+        overall: dict[str, Any],
+        anomaly: dict[str, Any],
+        related: dict[str, dict[str, Any]],
+        dimension: str,
+        focus_value: str,
+    ) -> tuple[str, str]:
+        if any(not call.ok for call in self.trace):
+            return "tool_failure", "调查工具执行失败；本次不输出支持的候选原因。"
+
+        focus = self._find_focus({"rows": anomaly.get("all_comparisons", [])}, dimension, focus_value)
+        required_rows = [focus]
+        duplicate_case = "duplicate_signature_rate" in related
+        if duplicate_case:
+            required_ids = ("duplicate_signature_rate", "system_adoption_rate")
+        elif dimension == "strategy_segment":
+            required_ids = ()
+        else:
+            required_ids = ("tutorial_completion_rate",)
+        focus_related = {
+            metric_id: self._find_focus(related.get(metric_id, {}), dimension, focus_value)
+            for metric_id in required_ids
+        }
+        required_rows.extend(focus_related.values())
+        queries = [item["result"] for item in self.evidence if item["title"] == "query_metrics"]
+        if (
+            not overall.get("rows")
+            or not all(self._usable_comparison(row) for row in required_rows)
+            or not queries
+            or any(not query.get("rows") for query in queries)
+        ):
+            return "insufficient_evidence", "缺少可用数据或统计比较：需两个窗口均有足够样本、必需指标和查询证据。"
+
+        detected_focus = self._find_focus({"rows": anomaly.get("anomalies", [])}, dimension, focus_value)
+        direction = 1 if duplicate_case else -1
+        if not detected_focus or not self._significant_change(focus, direction):
+            return "no_supported_candidate", "焦点分群未出现符合该排查假设方向和统计门槛的异常。"
+        if duplicate_case:
+            duplicate = focus_related["duplicate_signature_rate"]
+            adoption = focus_related["system_adoption_rate"]
+            if (
+                not self._significant_change(duplicate, 1)
+                or duplicate["delta"] <= 1
+                or self._significant_change(adoption, 1)
+            ):
+                return "no_supported_candidate", "重复率或玩家采用率证据不符合当前重复上报排查规则；需进一步复核。"
+        elif required_ids and not self._significant_change(focus_related["tutorial_completion_rate"], -1):
+            return "no_supported_candidate", "教程完成率未出现足够证据支持的同向下降，不能支持上游教程候选。"
+        return "supported", "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。"
 
     def _rank_candidates(
         self,
@@ -211,15 +328,15 @@ class DeterministicInvestigator:
             adoption_row = self._find_focus(related.get("system_adoption_rate", {}), dimension, focus_value)
             duplicate_delta = None if not duplicate_row else duplicate_row.get("delta")
             adoption_delta = None if not adoption_row else adoption_row.get("delta")
-            duplicate_confidence = "high" if duplicate_delta is not None and duplicate_delta > 1 else "medium"
+            duplicate_confidence = self._supported_confidence(focus_anomaly, duplicate_row)
             return [
                 {
                     "id": "duplicate_event_reporting",
                     "title": "重复埋点上报放大事件级参与强度",
                     "confidence": duplicate_confidence,
                     "status": "supported_candidate",
-                    "evidence_refs": [related_refs["duplicate_signature_rate"], *sql_refs],
-                    "reasoning": f"重复签名率变化为 {duplicate_delta}; 玩家级采用率变化为 {adoption_delta}。事件级上升但玩家级采用未同步，是数据质量问题的典型证据组合。",
+                    "evidence_refs": [anomaly_ref, related_refs["duplicate_signature_rate"], related_refs["system_adoption_rate"], *sql_refs],
+                    "reasoning": f"重复签名率变化为 {duplicate_delta}; 玩家级采用率变化为 {adoption_delta}。事件强度与重复率显著上升，未检出玩家采用率显著上升；未检出不等于证明采用率不变，仍需人工核对埋点。",
                 },
                 {
                     "id": "real_usage_expansion",
@@ -240,7 +357,7 @@ class DeterministicInvestigator:
             ]
 
         if dimension == "strategy_segment":
-            confidence = "high" if focus_anomaly and focus_anomaly.get("confidence") in {"high", "medium"} else "medium"
+            confidence = self._supported_confidence(focus_anomaly)
             return [
                 {
                     "id": "segment_leveraged_churn",
@@ -248,15 +365,15 @@ class DeterministicInvestigator:
                     "confidence": confidence,
                     "status": "supported_candidate",
                     "evidence_refs": [anomaly_ref, *sql_refs],
-                    "reasoning": f"该分群当前窗口相对基线变化 {focus_delta}; 分群检验比整体平均更强。",
+                    "reasoning": f"该分群当前窗口相对基线变化 {focus_delta}，且达到样本量与统计门槛；这定位了退化分群，尚未证明业务根因。",
                 },
                 {
                     "id": "version_wide_regression",
                     "title": "版本级普遍留存退化",
                     "confidence": "low",
-                    "status": "partially_disconfirmed",
+                    "status": "alternative",
                     "evidence_refs": [self.trace[1].evidence_id, anomaly_ref],
-                    "reasoning": "整体变化不足以解释分群内的集中跌幅。",
+                    "reasoning": "需结合整体与各分群比较，判断是否同时存在版本级普遍退化；局部分群异常不能单独排除该解释。",
                 },
                 {
                     "id": "random_cohort_noise",
@@ -271,7 +388,7 @@ class DeterministicInvestigator:
         tutorial = related.get("tutorial_completion_rate", {})
         tutorial_row = self._find_focus(tutorial, dimension, focus_value)
         tutorial_delta = None if not tutorial_row else tutorial_row.get("delta")
-        tutorial_confidence = "high" if tutorial_row and tutorial_row.get("confidence") in {"high", "medium"} else "medium"
+        tutorial_confidence = self._supported_confidence(focus_anomaly, tutorial_row)
         return [
             {
                 "id": "upstream_tutorial_drop",

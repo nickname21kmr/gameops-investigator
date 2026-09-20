@@ -83,6 +83,8 @@ def draft_incident_report(
     candidates: list[dict[str, Any]],
     evidence: list[dict[str, Any]],
     limitations: list[str] | None = None,
+    investigation_status: str | None = None,
+    investigation_reason: str | None = None,
 ) -> dict[str, Any]:
     """Draft a human-review report and validate that every evidence reference exists."""
     return draft_incident_report_impl(
@@ -93,6 +95,8 @@ def draft_incident_report(
         candidates,
         evidence,
         limitations,
+        investigation_status,
+        investigation_reason,
     )
 
 
