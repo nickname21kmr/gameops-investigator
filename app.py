@@ -108,17 +108,18 @@ if mode == "Claude Code + MCP":
             st.info("请按上方错误提示排查后手动重试；下方仍展示同工具链的确定性回放，并非本次 Claude 调查结果。")
 
 result = run_replay(scenario_id)
-overall = result["overall_comparison"]["rows"][0]
-unit = result["alert_metric"]["unit"]
-baseline_value = overall["baseline"]["value"]
-current_value = overall["current"]["value"]
-delta = overall["delta"]
+overall_rows = result["overall_comparison"].get("rows", [])
+overall = overall_rows[0] if overall_rows else {}
+unit = result["alert_metric"].get("unit", "percent")
+baseline_value = overall.get("baseline", {}).get("value")
+current_value = overall.get("current", {}).get("value")
+delta = overall.get("delta")
 
 metric_cols = st.columns(4)
 metric_cols[0].metric("Baseline", metric_text(baseline_value, unit))
 delta_label = None if delta is None else (f"{delta:+.2f} pp" if unit == "percent" else f"{delta:+.3f}")
 metric_cols[1].metric("Current", metric_text(current_value, unit), delta_label)
-metric_cols[2].metric("Detected slices", result["anomaly_result"]["anomaly_count"])
+metric_cols[2].metric("Detected slices", result["anomaly_result"].get("anomaly_count", "N/A"))
 metric_cols[3].metric("Tool calls", len(result["trace"]), f"{result['elapsed_ms']:.0f} ms replay")
 
 tab_conclusion, tab_evidence, tab_monitor, tab_eval, tab_governance = st.tabs(
@@ -129,6 +130,12 @@ with tab_conclusion:
     left, right = st.columns([1.12, .88], gap="large")
     with left:
         st.markdown("### Ranked cause candidates")
+        if not result["candidates"]:
+            message = result["investigation_reason"]
+            if result["investigation_status"] == "tool_failure":
+                st.error(message)
+            else:
+                st.info(message)
         for index, candidate in enumerate(result["candidates"], start=1):
             refs = ", ".join(candidate["evidence_refs"])
             st.markdown(
@@ -176,38 +183,42 @@ with tab_evidence:
 
 with tab_monitor:
     st.markdown("### Current vs baseline by affected dimension")
-    rows = result["anomaly_result"]["all_comparisons"]
-    dimension = result["anomaly_result"]["dimensions"][0]
-    labels = [row["dimensions"].get(dimension, "ALL") for row in rows]
-    baseline_series = [row["baseline"]["value"] for row in rows]
-    current_series = [row["current"]["value"] for row in rows]
-    chart = go.Figure()
-    chart.add_bar(name="Baseline", x=labels, y=baseline_series, marker_color="#64748B")
-    chart.add_bar(name="Current", x=labels, y=current_series, marker_color="#2DD4BF")
-    chart.update_layout(
-        barmode="group",
-        height=410,
-        margin=dict(l=10, r=10, t=30, b=10),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        legend_orientation="h",
-        yaxis_title="Percent" if unit == "percent" else "Ratio",
-        xaxis_title=dimension,
-    )
-    st.plotly_chart(chart, width="stretch")
-    monitor_rows = []
-    for row in rows:
-        monitor_rows.append(
-            {
-                dimension: row["dimensions"].get(dimension),
-                "baseline": row["baseline"]["value"],
-                "current": row["current"]["value"],
-                "delta": row["delta"],
-                "z_score": row["z_score"],
-                "confidence": row["confidence"],
-            }
+    rows = result["anomaly_result"].get("all_comparisons", [])
+    dimensions = result["anomaly_result"].get("dimensions", [])
+    if not rows or not dimensions:
+        st.info("No cohort comparisons are available for monitoring. Check the investigation status and data windows.")
+    else:
+        dimension = dimensions[0]
+        labels = [row["dimensions"].get(dimension, "ALL") for row in rows]
+        baseline_series = [row["baseline"]["value"] for row in rows]
+        current_series = [row["current"]["value"] for row in rows]
+        chart = go.Figure()
+        chart.add_bar(name="Baseline", x=labels, y=baseline_series, marker_color="#64748B")
+        chart.add_bar(name="Current", x=labels, y=current_series, marker_color="#2DD4BF")
+        chart.update_layout(
+            barmode="group",
+            height=410,
+            margin=dict(l=10, r=10, t=30, b=10),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            legend_orientation="h",
+            yaxis_title="Percent" if unit == "percent" else "Ratio",
+            xaxis_title=dimension,
         )
-    st.dataframe(pd.DataFrame(monitor_rows), width="stretch", hide_index=True)
+        st.plotly_chart(chart, width="stretch")
+        monitor_rows = []
+        for row in rows:
+            monitor_rows.append(
+                {
+                    dimension: row["dimensions"].get(dimension),
+                    "baseline": row["baseline"]["value"],
+                    "current": row["current"]["value"],
+                    "delta": row["delta"],
+                    "z_score": row["z_score"],
+                    "confidence": row["confidence"],
+                }
+            )
+        st.dataframe(pd.DataFrame(monitor_rows), width="stretch", hide_index=True)
 
 with tab_eval:
     evaluation = eval_results()

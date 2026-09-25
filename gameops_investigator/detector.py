@@ -101,7 +101,7 @@ def detect_anomalies(
     )
     anomalies = []
     for row in comparison["rows"]:
-        denominator = row["current"]["denominator"]
+        denominator = min(row["current"]["denominator"], row["baseline"]["denominator"])
         z_score = row["z_score"]
         if denominator >= min_denominator and z_score is not None and abs(z_score) >= z_threshold:
             direction = "increase" if (row["delta"] or 0) > 0 else "decrease"

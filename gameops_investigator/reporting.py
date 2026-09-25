@@ -21,12 +21,21 @@ def draft_report(
     candidates: list[dict[str, Any]],
     evidence: list[dict[str, Any]],
     limitations: list[str] | None = None,
+    investigation_status: str | None = None,
+    investigation_reason: str | None = None,
 ) -> dict[str, Any]:
     limitations = limitations or []
+    has_supported_candidate = any(item.get("status") == "supported_candidate" for item in candidates)
+    investigation_status = investigation_status or ("supported" if has_supported_candidate else "no_supported_candidate")
+    investigation_reason = investigation_reason or (
+        "Candidates require analyst review; association is not causal proof."
+        if has_supported_candidate else "No cause candidate has sufficient support in this report."
+    )
     first = overall_comparison["rows"][0] if overall_comparison.get("rows") else None
     unit = alert_metric.get("unit", "percent")
     report_seed = json.dumps(
-        {"title": title, "metric": alert_metric.get("metric_id"), "candidates": candidates, "evidence": evidence},
+        {"title": title, "metric": alert_metric.get("metric_id"), "candidates": candidates, "evidence": evidence,
+         "investigation_status": investigation_status, "investigation_reason": investigation_reason},
         sort_keys=True,
         ensure_ascii=False,
         default=str,
@@ -48,6 +57,8 @@ def draft_report(
         f"- Report ID: `{report_id}`",
         f"- Generated at: `{generated_at}`",
         "- Decision status: `human_review_required`",
+        f"- Investigation status: `{investigation_status}`",
+        f"- Investigation outcome: {investigation_reason}",
         "- Dataset: synthetic NewtonMarket demo data; not production player behavior",
         "",
         "## Alert summary",
@@ -58,6 +69,8 @@ def draft_report(
         "## Ranked cause candidates",
         "",
     ]
+    if not candidates:
+        lines.extend(["No supported cause candidates. Do not infer a cause from this run.", ""])
     for index, candidate in enumerate(candidates, start=1):
         refs = ", ".join(f"`{item}`" for item in candidate.get("evidence_refs", [])) or "none"
         lines.extend(
@@ -85,8 +98,16 @@ def draft_report(
         [
             "## Recommended next actions",
             "",
-            "1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.",
-            "2. Check release notes, client logs, and tracking delivery records for the affected cohort only.",
+            (
+                "1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample."
+                if has_supported_candidate else
+                "1. Verify tool completion, data coverage and sample sizes before investigating a cause."
+            ),
+            (
+                "2. Check release notes, client logs, and tracking delivery records for the affected cohort only."
+                if has_supported_candidate else
+                "2. Collect the missing evidence or revise the hypothesis; no cause has been established."
+            ),
             "3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.",
             "",
             "## Limitations and uncertainty",
@@ -108,6 +129,8 @@ def draft_report(
         "report_id": report_id,
         "generated_at": generated_at,
         "review_status": "human_review_required",
+        "investigation_status": investigation_status,
+        "investigation_reason": investigation_reason,
         "markdown": markdown,
         "citation_check": {
             "valid": cited <= available,

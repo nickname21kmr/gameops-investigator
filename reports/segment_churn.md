@@ -1,8 +1,10 @@
 # 新版本局部玩家分群流失，被整体平均值掩盖
 
-- Report ID: `IR-6D160C1741`
-- Generated at: `2026-08-30T01:00:20+00:00`
+- Report ID: `IR-2B39214944`
+- Generated at: `2026-09-20T14:44:04+00:00`
 - Decision status: `human_review_required`
+- Investigation status: `supported`
+- Investigation outcome: 焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。
 - Dataset: synthetic NewtonMarket demo data; not production player behavior
 
 ## Alert summary
@@ -17,14 +19,14 @@ The detector used `two_proportion_z` with a z-threshold of `1.96`.
 - Confidence: `high`
 - Status: `supported_candidate`
 - Evidence: `E03`, `E06`
-- Reasoning: 该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。
+- Reasoning: 该分群当前窗口相对基线变化 -21.820175，且达到样本量与统计门槛；这定位了退化分群，尚未证明业务根因。
 
 ### 2. 版本级普遍留存退化
 
 - Confidence: `low`
-- Status: `partially_disconfirmed`
+- Status: `alternative`
 - Evidence: `E02`, `E03`
-- Reasoning: 整体变化不足以解释分群内的集中跌幅。
+- Reasoning: 需结合整体与各分群比较，判断是否同时存在版本级普遍退化；局部分群异常不能单独排除该解释。
 
 ### 3. 小样本或随机 cohort 波动
 
@@ -58,10 +60,10 @@ Result digest: `67ac065b9cf6f3f1`
 ### E06 — query_metrics
 
 ```sql
-SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100
+SELECT u.install_date, u.strategy_segment, COUNT(DISTINCT u.user_id) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100
 ```
 
-Result digest: `5223b972833f08be`
+Result digest: `9b3bfb6c20b8ca43`
 
 ## Recommended next actions
 

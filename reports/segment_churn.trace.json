@@ -1,4 +1,7 @@
 {
+  "ok": true,
+  "investigation_status": "supported",
+  "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
   "scenario_id": "segment_churn",
   "title": "新版本局部玩家分群流失，被整体平均值掩盖",
   "mode": "deterministic_replay",
@@ -582,18 +585,18 @@
         "E03",
         "E06"
       ],
-      "reasoning": "该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。"
+      "reasoning": "该分群当前窗口相对基线变化 -21.820175，且达到样本量与统计门槛；这定位了退化分群，尚未证明业务根因。"
     },
     {
       "id": "version_wide_regression",
       "title": "版本级普遍留存退化",
       "confidence": "low",
-      "status": "partially_disconfirmed",
+      "status": "alternative",
       "evidence_refs": [
         "E02",
         "E03"
       ],
-      "reasoning": "整体变化不足以解释分群内的集中跌幅。"
+      "reasoning": "需结合整体与各分群比较，判断是否同时存在版本级普遍退化；局部分群异常不能单独排除该解释。"
     },
     {
       "id": "random_cohort_noise",
@@ -1203,8 +1206,8 @@
     {
       "evidence_id": "E06",
       "title": "query_metrics",
-      "digest": "5223b972833f08be",
-      "sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
+      "digest": "9b3bfb6c20b8ca43",
+      "sql": "SELECT u.install_date, u.strategy_segment, COUNT(DISTINCT u.user_id) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
       "result": {
         "ok": true,
         "columns": [
@@ -1217,358 +1220,360 @@
           {
             "install_date": "2026-08-01",
             "strategy_segment": "conservative",
-            "cohort_users": 84,
+            "cohort_users": 3,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-01",
             "strategy_segment": "diversified",
-            "cohort_users": 103,
+            "cohort_users": 4,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-01",
             "strategy_segment": "leveraged",
-            "cohort_users": 32,
+            "cohort_users": 1,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-01",
             "strategy_segment": "research",
-            "cohort_users": 80,
+            "cohort_users": 4,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-02",
             "strategy_segment": "conservative",
-            "cohort_users": 147,
+            "cohort_users": 4,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-02",
             "strategy_segment": "diversified",
-            "cohort_users": 134,
+            "cohort_users": 4,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-02",
             "strategy_segment": "leveraged",
-            "cohort_users": 76,
+            "cohort_users": 4,
             "d1_users": 3
           },
           {
             "install_date": "2026-08-02",
             "strategy_segment": "research",
-            "cohort_users": 130,
+            "cohort_users": 3,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-03",
             "strategy_segment": "conservative",
-            "cohort_users": 14,
+            "cohort_users": 1,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-03",
             "strategy_segment": "diversified",
-            "cohort_users": 136,
+            "cohort_users": 5,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-03",
             "strategy_segment": "leveraged",
-            "cohort_users": 220,
+            "cohort_users": 6,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-03",
             "strategy_segment": "research",
-            "cohort_users": 149,
+            "cohort_users": 3,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-04",
             "strategy_segment": "conservative",
-            "cohort_users": 150,
+            "cohort_users": 4,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-04",
             "strategy_segment": "diversified",
-            "cohort_users": 152,
+            "cohort_users": 2,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-04",
             "strategy_segment": "leveraged",
-            "cohort_users": 20,
+            "cohort_users": 2,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-04",
             "strategy_segment": "research",
-            "cohort_users": 153,
+            "cohort_users": 4,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-05",
             "strategy_segment": "conservative",
-            "cohort_users": 126,
+            "cohort_users": 4,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-05",
             "strategy_segment": "diversified",
-            "cohort_users": 140,
+            "cohort_users": 5,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-05",
             "strategy_segment": "leveraged",
-            "cohort_users": 109,
+            "cohort_users": 3,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-05",
             "strategy_segment": "research",
-            "cohort_users": 40,
+            "cohort_users": 1,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-06",
             "strategy_segment": "conservative",
-            "cohort_users": 358,
+            "cohort_users": 12,
             "d1_users": 7
           },
           {
             "install_date": "2026-08-06",
             "strategy_segment": "diversified",
-            "cohort_users": 348,
+            "cohort_users": 9,
             "d1_users": 3
           },
           {
             "install_date": "2026-08-06",
             "strategy_segment": "leveraged",
-            "cohort_users": 198,
+            "cohort_users": 8,
             "d1_users": 3
           },
           {
             "install_date": "2026-08-06",
             "strategy_segment": "research",
-            "cohort_users": 312,
+            "cohort_users": 8,
             "d1_users": 3
           },
           {
             "install_date": "2026-08-07",
             "strategy_segment": "conservative",
-            "cohort_users": 487,
+            "cohort_users": 11,
             "d1_users": 4
           },
           {
             "install_date": "2026-08-07",
             "strategy_segment": "diversified",
-            "cohort_users": 303,
+            "cohort_users": 11,
             "d1_users": 6
           },
           {
             "install_date": "2026-08-07",
             "strategy_segment": "leveraged",
-            "cohort_users": 394,
+            "cohort_users": 8,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-07",
             "strategy_segment": "research",
-            "cohort_users": 207,
+            "cohort_users": 6,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-08",
             "strategy_segment": "conservative",
-            "cohort_users": 212,
+            "cohort_users": 6,
             "d1_users": 4
           },
           {
             "install_date": "2026-08-08",
             "strategy_segment": "diversified",
-            "cohort_users": 602,
+            "cohort_users": 17,
             "d1_users": 8
           },
           {
             "install_date": "2026-08-08",
             "strategy_segment": "leveraged",
-            "cohort_users": 344,
+            "cohort_users": 13,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-08",
             "strategy_segment": "research",
-            "cohort_users": 209,
+            "cohort_users": 7,
             "d1_users": 3
           },
           {
             "install_date": "2026-08-09",
             "strategy_segment": "conservative",
-            "cohort_users": 226,
+            "cohort_users": 6,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-09",
             "strategy_segment": "diversified",
-            "cohort_users": 251,
+            "cohort_users": 13,
             "d1_users": 5
           },
           {
             "install_date": "2026-08-09",
             "strategy_segment": "leveraged",
-            "cohort_users": 201,
+            "cohort_users": 8,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-09",
             "strategy_segment": "research",
-            "cohort_users": 291,
+            "cohort_users": 10,
             "d1_users": 4
           },
           {
             "install_date": "2026-08-10",
             "strategy_segment": "conservative",
-            "cohort_users": 294,
+            "cohort_users": 13,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-10",
             "strategy_segment": "diversified",
-            "cohort_users": 314,
+            "cohort_users": 9,
             "d1_users": 3
           },
           {
             "install_date": "2026-08-10",
             "strategy_segment": "leveraged",
-            "cohort_users": 93,
+            "cohort_users": 4,
             "d1_users": 1
           },
           {
             "install_date": "2026-08-10",
             "strategy_segment": "research",
-            "cohort_users": 210,
+            "cohort_users": 10,
             "d1_users": 3
           },
           {
             "install_date": "2026-08-11",
             "strategy_segment": "conservative",
-            "cohort_users": 1686,
+            "cohort_users": 48,
             "d1_users": 20
           },
           {
             "install_date": "2026-08-11",
             "strategy_segment": "diversified",
-            "cohort_users": 1633,
+            "cohort_users": 49,
             "d1_users": 17
           },
           {
             "install_date": "2026-08-11",
             "strategy_segment": "leveraged",
-            "cohort_users": 1246,
+            "cohort_users": 41,
             "d1_users": 4
           },
           {
             "install_date": "2026-08-11",
             "strategy_segment": "research",
-            "cohort_users": 1030,
+            "cohort_users": 34,
             "d1_users": 11
           },
           {
             "install_date": "2026-08-12",
             "strategy_segment": "conservative",
-            "cohort_users": 1198,
+            "cohort_users": 45,
             "d1_users": 15
           },
           {
             "install_date": "2026-08-12",
             "strategy_segment": "diversified",
-            "cohort_users": 1927,
+            "cohort_users": 58,
             "d1_users": 19
           },
           {
             "install_date": "2026-08-12",
             "strategy_segment": "leveraged",
-            "cohort_users": 922,
+            "cohort_users": 38,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-12",
             "strategy_segment": "research",
-            "cohort_users": 1265,
+            "cohort_users": 34,
             "d1_users": 8
           },
           {
             "install_date": "2026-08-13",
             "strategy_segment": "conservative",
-            "cohort_users": 1198,
+            "cohort_users": 45,
             "d1_users": 14
           },
           {
             "install_date": "2026-08-13",
             "strategy_segment": "diversified",
-            "cohort_users": 1133,
+            "cohort_users": 36,
             "d1_users": 12
           },
           {
             "install_date": "2026-08-13",
             "strategy_segment": "leveraged",
-            "cohort_users": 647,
+            "cohort_users": 26,
             "d1_users": 2
           },
           {
             "install_date": "2026-08-13",
             "strategy_segment": "research",
-            "cohort_users": 890,
+            "cohort_users": 42,
             "d1_users": 16
           },
           {
             "install_date": "2026-08-14",
             "strategy_segment": "conservative",
-            "cohort_users": 1368,
+            "cohort_users": 44,
             "d1_users": 15
           },
           {
             "install_date": "2026-08-14",
             "strategy_segment": "diversified",
-            "cohort_users": 1669,
+            "cohort_users": 46,
             "d1_users": 12
           },
           {
             "install_date": "2026-08-14",
             "strategy_segment": "leveraged",
-            "cohort_users": 526,
+            "cohort_users": 23,
             "d1_users": 0
           },
           {
             "install_date": "2026-08-14",
             "strategy_segment": "research",
-            "cohort_users": 1597,
+            "cohort_users": 42,
             "d1_users": 20
           }
         ],
         "row_count": 56,
         "truncated": false,
-        "elapsed_ms": 63.158,
-        "executed_sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
+        "elapsed_ms": 91.768,
+        "executed_sql": "SELECT u.install_date, u.strategy_segment, COUNT(DISTINCT u.user_id) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
         "policy": "read_only_allowlist"
       }
     },
     {
       "evidence_id": "E07",
       "title": "draft_incident_report",
-      "digest": "7cf5d10697fccde7",
+      "digest": "9be6f5db396ddeb7",
       "sql": null,
       "result": {
         "ok": true,
-        "report_id": "IR-6D160C1741",
-        "generated_at": "2026-08-30T01:00:20+00:00",
+        "report_id": "IR-2B39214944",
+        "generated_at": "2026-09-20T14:44:04+00:00",
         "review_status": "human_review_required",
-        "markdown": "# 新版本局部玩家分群流失，被整体平均值掩盖\n\n- Report ID: `IR-6D160C1741`\n- Generated at: `2026-08-30T01:00:20+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **34.38%** to **28.73%** (-5.65 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. leveraged 分群发生局部留存退化\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E06`\n- Reasoning: 该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。\n\n### 2. 版本级普遍留存退化\n\n- Confidence: `low`\n- Status: `partially_disconfirmed`\n- Evidence: `E02`, `E03`\n- Reasoning: 整体变化不足以解释分群内的集中跌幅。\n\n### 3. 小样本或随机 cohort 波动\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `e36366410829d564`\n\n### E03 — detect_anomalies\n\nResult digest: `ca5763dc023e1679`\n\n### E04 — compare_cohorts\n\nResult digest: `764b882977049fe0`\n\n### E05 — compare_cohorts\n\nResult digest: `67ac065b9cf6f3f1`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100\n```\n\nResult digest: `5223b972833f08be`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+        "investigation_status": "supported",
+        "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
+        "markdown": "# 新版本局部玩家分群流失，被整体平均值掩盖\n\n- Report ID: `IR-2B39214944`\n- Generated at: `2026-09-20T14:44:04+00:00`\n- Decision status: `human_review_required`\n- Investigation status: `supported`\n- Investigation outcome: 焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **34.38%** to **28.73%** (-5.65 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. leveraged 分群发生局部留存退化\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E06`\n- Reasoning: 该分群当前窗口相对基线变化 -21.820175，且达到样本量与统计门槛；这定位了退化分群，尚未证明业务根因。\n\n### 2. 版本级普遍留存退化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E02`, `E03`\n- Reasoning: 需结合整体与各分群比较，判断是否同时存在版本级普遍退化；局部分群异常不能单独排除该解释。\n\n### 3. 小样本或随机 cohort 波动\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `e36366410829d564`\n\n### E03 — detect_anomalies\n\nResult digest: `ca5763dc023e1679`\n\n### E04 — compare_cohorts\n\nResult digest: `764b882977049fe0`\n\n### E05 — compare_cohorts\n\nResult digest: `67ac065b9cf6f3f1`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.strategy_segment, COUNT(DISTINCT u.user_id) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100\n```\n\nResult digest: `9b3bfb6c20b8ca43`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
         "citation_check": {
           "valid": true,
           "cited_evidence_ids": [
@@ -1595,7 +1600,7 @@
       "arguments": {
         "metric_name": "d1_retention"
       },
-      "elapsed_ms": 0.845,
+      "elapsed_ms": 0.952,
       "ok": true,
       "evidence_id": "E01"
     },
@@ -1617,7 +1622,7 @@
         },
         "group_by": []
       },
-      "elapsed_ms": 31.864,
+      "elapsed_ms": 59.226,
       "ok": true,
       "evidence_id": "E02"
     },
@@ -1639,7 +1644,7 @@
         "min_denominator": 20,
         "z_threshold": 1.96
       },
-      "elapsed_ms": 53.017,
+      "elapsed_ms": 76.596,
       "ok": true,
       "evidence_id": "E03"
     },
@@ -1663,7 +1668,7 @@
           "strategy_segment"
         ]
       },
-      "elapsed_ms": 53.133,
+      "elapsed_ms": 72.797,
       "ok": true,
       "evidence_id": "E04"
     },
@@ -1687,18 +1692,18 @@
           "strategy_segment"
         ]
       },
-      "elapsed_ms": 53.272,
+      "elapsed_ms": 109.36,
       "ok": true,
       "evidence_id": "E05"
     },
     {
       "tool": "query_metrics",
       "arguments": {
-        "sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
+        "sql": "SELECT u.install_date, u.strategy_segment, COUNT(DISTINCT u.user_id) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100",
         "row_limit": 100,
         "timeout_ms": 3000
       },
-      "elapsed_ms": 63.253,
+      "elapsed_ms": 92.02,
       "ok": true,
       "evidence_id": "E06"
     },
@@ -1972,18 +1977,18 @@
               "E03",
               "E06"
             ],
-            "reasoning": "该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。"
+            "reasoning": "该分群当前窗口相对基线变化 -21.820175，且达到样本量与统计门槛；这定位了退化分群，尚未证明业务根因。"
           },
           {
             "id": "version_wide_regression",
             "title": "版本级普遍留存退化",
             "confidence": "low",
-            "status": "partially_disconfirmed",
+            "status": "alternative",
             "evidence_refs": [
               "E02",
               "E03"
             ],
-            "reasoning": "整体变化不足以解释分群内的集中跌幅。"
+            "reasoning": "需结合整体与各分群比较，判断是否同时存在版本级普遍退化；局部分群异常不能单独排除该解释。"
           },
           {
             "id": "random_cohort_noise",
@@ -2030,25 +2035,29 @@
           {
             "evidence_id": "E06",
             "title": "query_metrics",
-            "digest": "5223b972833f08be",
-            "sql": "SELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100"
+            "digest": "9b3bfb6c20b8ca43",
+            "sql": "SELECT u.install_date, u.strategy_segment, COUNT(DISTINCT u.user_id) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100"
           }
         ],
         "limitations": [
           "The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code."
-        ]
+        ],
+        "investigation_status": "supported",
+        "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。"
       },
-      "elapsed_ms": 0.109,
+      "elapsed_ms": 0.122,
       "ok": true,
       "evidence_id": "E07"
     }
   ],
   "report": {
     "ok": true,
-    "report_id": "IR-6D160C1741",
-    "generated_at": "2026-08-30T01:00:20+00:00",
+    "report_id": "IR-2B39214944",
+    "generated_at": "2026-09-20T14:44:04+00:00",
     "review_status": "human_review_required",
-    "markdown": "# 新版本局部玩家分群流失，被整体平均值掩盖\n\n- Report ID: `IR-6D160C1741`\n- Generated at: `2026-08-30T01:00:20+00:00`\n- Decision status: `human_review_required`\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **34.38%** to **28.73%** (-5.65 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. leveraged 分群发生局部留存退化\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E06`\n- Reasoning: 该分群当前窗口相对基线变化 -21.820175; 分群检验比整体平均更强。\n\n### 2. 版本级普遍留存退化\n\n- Confidence: `low`\n- Status: `partially_disconfirmed`\n- Evidence: `E02`, `E03`\n- Reasoning: 整体变化不足以解释分群内的集中跌幅。\n\n### 3. 小样本或随机 cohort 波动\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `e36366410829d564`\n\n### E03 — detect_anomalies\n\nResult digest: `ca5763dc023e1679`\n\n### E04 — compare_cohorts\n\nResult digest: `764b882977049fe0`\n\n### E05 — compare_cohorts\n\nResult digest: `67ac065b9cf6f3f1`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.strategy_segment, COUNT(*) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100\n```\n\nResult digest: `5223b972833f08be`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
+    "investigation_status": "supported",
+    "investigation_reason": "焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。",
+    "markdown": "# 新版本局部玩家分群流失，被整体平均值掩盖\n\n- Report ID: `IR-2B39214944`\n- Generated at: `2026-09-20T14:44:04+00:00`\n- Decision status: `human_review_required`\n- Investigation status: `supported`\n- Investigation outcome: 焦点异常与必需证据满足固定排查规则；候选仍需人工复核，不代表因果证明。\n- Dataset: synthetic NewtonMarket demo data; not production player behavior\n\n## Alert summary\n\n`D1 留存率` changed from **34.38%** to **28.73%** (-5.65 pp).\nThe detector used `two_proportion_z` with a z-threshold of `1.96`.\n\n## Ranked cause candidates\n\n### 1. leveraged 分群发生局部留存退化\n\n- Confidence: `high`\n- Status: `supported_candidate`\n- Evidence: `E03`, `E06`\n- Reasoning: 该分群当前窗口相对基线变化 -21.820175，且达到样本量与统计门槛；这定位了退化分群，尚未证明业务根因。\n\n### 2. 版本级普遍留存退化\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E02`, `E03`\n- Reasoning: 需结合整体与各分群比较，判断是否同时存在版本级普遍退化；局部分群异常不能单独排除该解释。\n\n### 3. 小样本或随机 cohort 波动\n\n- Confidence: `low`\n- Status: `alternative`\n- Evidence: `E03`\n- Reasoning: 统计程序已执行最小样本门槛与 z 检验，但仍需更多日期复核稳定性。\n\n## Evidence ledger\n\n### E01 — get_metric_definition\n\nResult digest: `153260e503bc18f1`\n\n### E02 — compare_cohorts\n\nResult digest: `e36366410829d564`\n\n### E03 — detect_anomalies\n\nResult digest: `ca5763dc023e1679`\n\n### E04 — compare_cohorts\n\nResult digest: `764b882977049fe0`\n\n### E05 — compare_cohorts\n\nResult digest: `67ac065b9cf6f3f1`\n\n### E06 — query_metrics\n\n```sql\nSELECT u.install_date, u.strategy_segment, COUNT(DISTINCT u.user_id) AS cohort_users, COUNT(DISTINCT CASE WHEN e.event_name = 'session_start' AND julianday(e.event_date) - julianday(u.install_date) = 1 THEN u.user_id END) AS d1_users FROM users u LEFT JOIN events e ON e.user_id = u.user_id WHERE u.app_version = '0.9.3' AND u.channel <> 'campus_demo' AND u.install_date BETWEEN '2026-08-01' AND '2026-08-14' GROUP BY u.install_date, u.strategy_segment ORDER BY u.install_date, u.strategy_segment LIMIT 100\n```\n\nResult digest: `9b3bfb6c20b8ca43`\n\n## Recommended next actions\n\n1. Have the owning analyst reproduce the top candidate against a clean instrumentation sample.\n2. Check release notes, client logs, and tracking delivery records for the affected cohort only.\n3. Do not roll back or rebalance solely from this report; use the linked evidence and owner sign-off.\n\n## Limitations and uncertainty\n\n- The analysis establishes association and data-quality signals, not causal proof.\n- This repository uses deterministic synthetic data with deliberately injected incidents.\n- LLM wording must not override metric definitions, SQL results, or statistical thresholds.\n- The deterministic coordinator follows a fixed investigation playbook; open-ended planning is delegated to Claude Code.\n",
     "citation_check": {
       "valid": true,
       "cited_evidence_ids": [
@@ -2067,5 +2076,5 @@
       "unknown_references": []
     }
   },
-  "elapsed_ms": 256.183
+  "elapsed_ms": 412.29
 }

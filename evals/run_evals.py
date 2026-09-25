@@ -109,9 +109,26 @@ def run(include_claude: bool = False) -> dict[str, Any]:
             }
         elif case_type == "incident_attribution":
             result = investigate_once(case["scenario_id"])
-            candidate_ids = [item["id"] for item in result["candidates"][:3]]
-            passed = case["expected_top3"] in candidate_ids
-            detail = {"candidate_ids": candidate_ids, "expected_top3": case["expected_top3"]}
+            top_candidates = result["candidates"][:3]
+            candidate_ids = [item["id"] for item in top_candidates]
+            supported_candidate_ids = [
+                item["id"] for item in top_candidates
+                if item.get("status") == "supported_candidate"
+            ]
+            run_ok = result.get("ok") is True
+            investigation_status = result.get("investigation_status")
+            passed = (
+                run_ok
+                and investigation_status == "supported"
+                and case["expected_top3"] in supported_candidate_ids
+            )
+            detail = {
+                "candidate_ids": candidate_ids,
+                "supported_candidate_ids": supported_candidate_ids,
+                "expected_top3": case["expected_top3"],
+                "run_ok": run_ok,
+                "investigation_status": investigation_status,
+            }
         elif case_type == "metric_contract":
             result = get_metric_definition(case["metric_id"])
             serialized = json.dumps(result, ensure_ascii=False)
