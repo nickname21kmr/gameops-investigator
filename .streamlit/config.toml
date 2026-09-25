@@ -1,10 +1,12 @@
 [theme]
-base = "dark"
-primaryColor = "#2DD4BF"
-backgroundColor = "#07111F"
-secondaryBackgroundColor = "#0E1B2B"
-textColor = "#E7EEF7"
-font = "sans serif"
+base = "light"
+primaryColor = "#2A78D6"
+backgroundColor = "#F6F5F1"
+secondaryBackgroundColor = "#EFEDE7"
+textColor = "#16181D"
+borderColor = "#E3E1DA"
+font = "'IBM Plex Sans', 'Noto Sans SC', sans-serif"
+codeFont = "'IBM Plex Mono', monospace"
 
 [server]
 headless = true
@@ -13,4 +15,3 @@ fileWatcherType = "poll"
 
 [browser]
 gatherUsageStats = false
-
